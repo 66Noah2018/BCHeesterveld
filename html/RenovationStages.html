@@ -10,8 +10,8 @@
         <script src="https://cdn.metroui.org.ua/v4-dev/js/metro.min.js"></script>
         <!-- fontawesome v5 -->
         <script src="https://kit.fontawesome.com/e64cafaf4a.js" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="./styles.css">
-        <script src="./main.js"></script>
+        <link rel="stylesheet" href="../styles.css">
+        <script src="../main.js"></script>
         <!-- bootstrap icons -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     </head>
@@ -23,14 +23,46 @@
             <li><a href="./AboutTheBC.html">BC Heesterveld</a></li>
             <li><a href="./Contact.html">Contact</a></li>
         </ul>
-        <p>Hier komt informatie over het groot onderhoud zelf:</p>
-        <ul>
-            <li>Timeline uit de kaderafspraken</li>
-            <ul>
-                <li>In 2 delen voor leesbaarheid</li>
-                <li>Mogelijkheid om in de afbeeldingen te klikken op de 'stages' die voor ons van toepassing zijn voor meer informatie</li>
-            </ul>
-            <li>Download link voor de kaderafspraken</li>
-        </ul>
+        <h1>Groot onderhoud Heesterveld</h1>
+        <p>Ymere werkt aan plannen om groot onderhoud uit te voeren aan onze woningen op de Heesterveld. De reden dat dit groot onderhoud genoemd wordt en geen renovatie, is omdat de huurcontracten <b>behouden</b> blijven. Naast dat er wettelijk een aantal dingen vastgelegd zijn over groot onderhoud en renovatie van (sociale) huurwoningen, zijn er in Amsterdam ook afspraken gemaakt tussen o.a. de gemeente en corporaties zoals Ymere; deze afspraken worden de Amsterdamse Kaderafspraken genoemd. Deze afspraken verduidelijken enkele wettelijke bepalingen, maar zorgen er ook voor dat wij als huurders méér rechten hebben dan wettelijk geregeld.</p>
+        <p>Op deze pagina zullen wij wat meer uitleg geven over groot onderhoud in het algemeen en specifiek over het groot onderhoud op de Heesterveld. Onderaan de pagina staan de Amsterdamse Kaderafspraken weergegeven.</p>
+
+        <h2>Tijdlijn voor het groot onderhoud</h2>
+        <p>De tijdlijn hieronder komt uit de Amsterdamse Kaderafspraken en geeft het proces weer voor renovatie en groot onderhoud. Op ons is de bovenste (groene) tijdlijn van toepassing: Renovatie MET behoud van huurovereenkomst. Het rode kader geeft aan waar we nu in het proces zijn: het opstellen van een participatieplan. Klik op de rondjes op de tijdlijn voor meer informatie over een onderdeel van het proces.</p>
+        <div class="img-container">
+            <img src="../assets/img/Tijdlijn.jpg" alt="Tijdlijn Amsterdamse Kaderafspraken" id="tijdlijn" usemap="#tijdlijnmap" width="1552.71" height="516.22" min-width="1552.71" min-height="516.22">
+            <span class="title">Tijdlijn uit de Amsterdamse Kaderafspraken, juni 2020 (adapted)</span>
+            <map name="tijdlijnmap">
+                <area shape="rect" coords="0,225,30,275" href="" onclick="showInfoBlock('informerenHuurders')">
+                <area shape="rect" coords="60,225,90,275" href="" onclick="showInfoBlock('oprichtenBC')">
+                <area shape="rect" coords="130,225,160,275" href="" onclick="showInfoBlock('geenCommissie')">
+                <area shape="rect" coords="200,225,230,275" href="" onclick="showInfoBlock('huurderskoepelInformeert')">
+                <area shape="rect" coords="270,225,300,275" href="" onclick="showInfoBlock('faciliterenBC')">
+                <area shape="rect" coords="335,225,365,275" href="" onclick="showInfoBlock('bewonersondersteuner')">
+                <area shape="rect" coords="400,225,430,275" href="" onclick="showInfoBlock('participatieplan')">
+                <area shape="rect" coords="470,225,500,275" href="" onclick="showInfoBlock('woonwensen')">
+                <area shape="rect" coords="535,225,565,275" href="" onclick="showInfoBlock('informerenVoorkeurscenario')">
+                <area shape="rect" coords="610,225,640,275" href="" onclick="showInfoBlock('overlegVoorkeurscenario')">
+                <area shape="rect" coords="680,225,710,275" href="" onclick="showInfoBlock('advies')">
+                <area shape="rect" coords="950,50,980,100" href="" onclick="showInfoBlock('overlegProjectplan')">
+                <area shape="rect" coords="1020,50,1050,100" href="" onclick="showInfoBlock('adviesaanvraagProjectplan')">
+                <area shape="rect" coords="1090,50,1120,100" href="" onclick="showInfoBlock('bewonersraadpleging')">
+                <area shape="rect" coords="1160,50,1190,100" href="" onclick="showInfoBlock('adviesProjectplan')">
+                <area shape="rect" coords="1230,50,1260,100" href="" onclick="showInfoBlock('reactieAdvies')">
+                <area shape="rect" coords="1300,50,1330,100" href="" onclick="showInfoBlock('aanvraagPeildatum')">
+                <area shape="rect" coords="1375,50,1405,100" href="" onclick="showInfoBlock('peildatum')">
+                <area shape="rect" coords="1445,50,1475,100" href="" onclick="showInfoBlock('renovatievoorstel')">
+                <area shape="rect" coords="1515,50,1545,100" href="" onclick="showInfoBlock('uitvoering')">
+            </map>
+        </div>
+        <div id="infoblock">
+            <div id="close-infoblock-btn"><button class="button square alert" onclick="hideInfoblock()">X</button></div>
+            <div id="infoblock-content"></div>
+        </div>
+
+        <h2>Amsterdamse Kaderafspraken</h2>
+        <object data="../assets/pdf/Kaderafspraken.pdf" type="application/pdf" id="kaderafspraken-docviewer">
+            <p>Unable to display PDF file. <a href="../assets/pdf/Kaderafspraken.pdf">Download</a> instead.</p>
+        </object>
     </body>
 </html>

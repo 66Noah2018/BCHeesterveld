@@ -1,0 +1,46 @@
+#kaderafspraken-docviewer{
+    width: 80%;
+    height: 970px;
+    margin-left: 10px;
+}
+
+h1, h2, h3, h4, h5, p {
+    margin-left: 10px;
+}
+
+h1, h2, h3, h4, h5 {
+    color: #4d0071;
+}
+
+.img-container{
+    width: 1600px !important;
+    min-width: 1600px;
+    margin-left: 10px;
+    
+    resize:none;
+}
+
+.img-container .title{
+    font-style: italic;
+    font-size: small;
+}
+
+body{
+    overflow: auto;
+}
+
+#infoblock {
+    border: 2px lightgray solid;
+    border-radius: 5px;
+    width: 700px;
+    height: fit-content;
+    min-height: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    display: none;
+}
+
+#close-infoblock-btn{
+    float: right;
+    z-index: 3;
+}
