@@ -4,6 +4,12 @@
     margin-left: 10px;
 }
 
+.brieven-docviewer{
+    width: 80%;
+    height: 970px;
+    margin-left: 40px;
+}
+
 h1, h2, h3, h4, h5, p {
     margin-left: 10px;
 }
@@ -43,4 +49,83 @@ body{
 #close-infoblock-btn{
     float: right;
     z-index: 3;
+}
+
+
+.header a{
+    color: black;
+    text-decoration: none;
+}
+
+.contact-form-iframe{
+    margin-left: -20px;
+}
+
+.content{
+    overflow: auto;
+}
+
+.links{
+    float: right;
+    margin-right: 10px;
+}
+
+.link-to-contact-page{
+    margin-left: 10px;
+}
+
+p {
+    margin-left: 10px;
+}
+
+#index-feed{
+    width: 500px;
+    margin-left: 30px;
+    border: 1px lightgray solid;
+    border-radius: 5px;
+    max-height: 700px;
+    overflow-y: auto;
+}
+
+#index-feed .title {
+    padding: 0;
+    text-align: center;
+}
+
+#index-feed .label{
+    font-size: larger;
+}
+
+#index-feed .second-label{
+    font-size: small;
+}
+
+.prev-content a, .next-content a{
+    color: #4d0071;
+    text-decoration: none;
+}
+
+.prev-content{
+    float: left;
+    position: absolute;
+    left: 10px;
+    top: 50vh;
+    z-index: 3;
+}
+
+.next-content{
+    float: right;
+    position: absolute;
+    right: 10px;
+    top: 50vh;
+    z-index: 3;
+}
+
+.active-menu-link{
+    background-color: rgba(77, 0, 113, 0.5) !important;
+    color: white !important;
+}
+
+.poll-form-iframe{
+    margin-left: 15px;
 }

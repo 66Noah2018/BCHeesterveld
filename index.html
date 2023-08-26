@@ -15,16 +15,28 @@
         <!-- bootstrap icons -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     </head>
-    <body>
-        <ul class="h-menu">
-            <li><a href="./index.html">Home</a></li>
-            <li><a href="./RenovationStages.html">Algemene informatie</a></li>
-            <li><a href="./Newsletters.html">Nieuwsbrieven</a></li>
-            <li><a href="./AboutTheBC.html">BC Heesterveld</a></li>
-            <li><a href="./Contact.html">Contact</a></li>
-        </ul>
-        <p>Een feed (zie <a href="https://metroui.org.ua/lists.html#_list_feed" target=”_blank”>deze link</a>, scroll naar Feed List)</p>
-        <p>Feed items op de homepage geven de eerste foto, de titel en de eerste 3 regels tekst weer. Door te klikken op een feed item kom je in een scherm met de volledige post</p>
-        <p>Mogelijkheid om op de 'volledige post pagina' m.b.v. pijltjes door posts heen te klikken</p>
+    <body onload="processParameters()">
+        <div class="header">
+            <ul class="h-menu">
+                <li class="active-menu-link"><a href="./index.html">Home</a></li>
+                <li><a href="./RenovationStages.html">Algemene informatie</a></li>
+                <li><a href="./Newsletters.html">Nieuwsbrieven</a></li>
+                <li><a href="./AboutTheBC.html">BC Heesterveld</a></li>
+                <li><a href="./Contact.html">Contact</a></li>
+                <div class="links">
+                    <a class="fa-solid fa-at fa-sm" href="mailto:bcheesterveld@gmail.com"></a>
+                    <a class="fa-brands fa-whatsapp fa-sm" href="https://chat.whatsapp.com/BcTvVk2yHCGFrMXAPfEzaD"></a>
+                    <a class="fa-brands fa-facebook fa-sm" href="https://www.facebook.com/HeesterveldCreativeCommunity/"></a>
+                    <a class="fa-brands fa-instagram fa-sm" href="https://www.instagram.com/heesterveldcc/?hl=en"></a>
+                </div>
+            </ul>
+        </div>
+        <div class="content" id="index-content">
+            <h1>Schijf je in voor de mailing list</h1>
+            <p>Wil je een email ontvangen bij nieuwe polls of (nieuws)brieven? Vul dan <a href="./Contact.html">dit</a> formulier in.</p>
+            <p>Deze mailinglist wordt beheerd door de bewonerscommissie, je gegevens worden niet gedeeld met Ymere of andere partijen.</p>
+            <h1>Updates en polls</h1>
+            <ul class="feed-list" id="index-feed"></ul>
+        </div>
     </body>
 </html>

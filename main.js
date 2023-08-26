@@ -1,4 +1,4 @@
-infoBlockContent = {
+const infoBlockContent = {
     "informerenHuurders": "De corporatie informeert de huurders, de bewonerscommissie (indien aanwezig), de huurderskoepel en de gemeente over het startbesluit.",
     "oprichtenBC": "De corporatie en de huurderskoepel hebben een inspanningsverplichting om een bewonerscommissie op te richten in projecten waar het reguliere participatie proces van de Kaderafspraken van toepassing is. Als dit niet lukt wordt dit schriftelijk vastgelegd.",
     "geenCommissie": "Wanneer het niet lukt om een bewonerscommissie op te richten, wordt in overleg met de huurderskoepel, de betrokkenheid van bewoners op een andere manier georganiseerd. Er is in ons geval sprake van een bewonerscommissie, dit is daarom niet van toepassing op dit project.",
@@ -28,3 +28,59 @@ function showInfoBlock(location){
 }
 
 function hideInfoblock(){ document.getElementById("infoblock").style.display = "none"; }
+
+const indexContentMapping = {
+    "nieuwsbriefAug": "Nieuwsbrief-Heesterveld-augustus-2023.pdf",
+    "asbestbrief": "Brief asbestonderzoek Heesterveld.pdf",
+    "pollProblemenInDeWoning": "https://docs.google.com/forms/d/e/1FAIpQLSe2k-sO9k190wRiHH--72RWba99d7CFxkfdp7z2_FYgRYe1lQ/viewform?embedded=true"
+};
+
+const indexHeaderMapping = { // order is important here! Add newest at the top, this is used for the index page feed list
+    "pollProblemenInDeWoning": "Poll: Welke problemen ervaar jij in je woning?",
+    "nieuwsbriefAug": "Nieuwsbrief van Ymere (augustus 2023)",
+    "asbestbrief": "Brief over het asbestonderzoek"
+}
+
+const indexHighlightsMapping = {
+    "nieuwsbriefAug": "<b>Voorlopige</b> plannen voor de buitenkant van de flats. O.a.: HR++ glas en een nieuw ontwerp voor de buitenkant van de flats\n<b>Voorlopige</b> plannen voor de binnenkant van de woningen. O.a.: op orde brengen/vervangen van sanitair en keukens en mechanische ventilatie\nNieuwe bewonerscommissie",
+    "asbestbrief": "De firma Wouters gaat asbestonderzoek uitvoeren binnen de woningen\nDit is een wettelijke verplichting en houdt niet in dat er verwacht wordt dat er veel asbest wordt aangetroffen\nOnderzoeken starten in september",
+    "pollProblemenInDeWoning": "Welke problemen ervaar jij in je woning en in de algemene ruimten?"
+}
+
+function processParameters(){
+    const urlParams = new URL(window.location.href).searchParams;
+    if (urlParams.toString() !== ""){
+        const requestedContent = urlParams.get("requestedContent");
+        const indexOfContent = Object.keys(indexHeaderMapping).indexOf(requestedContent);
+        const contentCount = Object.keys(indexHeaderMapping).length;
+        let newContent = "";
+        if (indexOfContent !== 0) {
+            const prevContentLink = "./index.html?requestedContent=" + Object.keys(indexHeaderMapping)[(indexOfContent-1)];
+            newContent += `<div class='prev-content'><a class="fas fa-chevron-left fa-xl" href=${prevContentLink}></a></div>`;
+        }
+        newContent += "<div class='curr-content'>";
+
+        if (requestedContent.startsWith("poll")){
+            newContent += `<h1>${indexHeaderMapping[requestedContent]}</h1><p class="poll info">${indexHighlightsMapping[requestedContent]}</p><iframe src="${indexContentMapping[requestedContent]}" width="640" height="700" frameborder="0" marginheight="0" marginwidth="0"class="poll-form-iframe">Loading…</iframe>`;
+        } else {
+            newContent += `<h1>${indexHeaderMapping[requestedContent]}</h1><ul class="highlights-list">`;
+            const highlightsList = indexHighlightsMapping[requestedContent].split("\n");
+            for (let highlight of highlightsList) { newContent += `<li>${highlight}</li>`; }
+            newContent += `</ul><object data="./${indexContentMapping[requestedContent]}" type="application/pdf" class="brieven-docviewer"><p>Unable to display PDF file. <a href="./${indexContentMapping[requestedContent]}">Download</a> instead.</p></object>`;
+        }
+        newContent += "</div>";
+        if (indexOfContent !== (contentCount - 1)){
+            const nextContentLink = "./index.html?requestedContent=" + Object.keys(indexHeaderMapping)[(indexOfContent+1)];
+            newContent += `<div class='next-content'><a class="fas fa-chevron-right fa-xl" href=${nextContentLink}></a></div>`;
+        }
+        document.getElementById("index-content").innerHTML = newContent;
+    } else { // load feed list
+        let feedlist = ``
+        for (let key in indexHeaderMapping) { 
+            const highlights = indexHighlightsMapping[key].replaceAll("\n", ". ");
+            const highlightsShortString = highlights.split(" ").slice(0, 20).join(" ") + "...";
+            feedlist += `<li onclick="location.href='./index.html?requestedContent=${key}'"><span class="label">${indexHeaderMapping[key]}</span><span class="second-label">${highlightsShortString}</span></li>`;
+        }
+        document.getElementById("index-feed").innerHTML = feedlist;
+    }
+}
