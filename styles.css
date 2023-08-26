@@ -57,12 +57,9 @@ body{
     text-decoration: none;
 }
 
-.contact-form-iframe{
-    margin-left: -20px;
-}
-
 .content{
     overflow: auto;
+    height: calc(100vh - 50px);
 }
 
 .links{
