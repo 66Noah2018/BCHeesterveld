@@ -32,19 +32,37 @@ function hideInfoblock(){ document.getElementById("infoblock").style.display = "
 const indexContentMapping = {
     "nieuwsbriefAug": "Nieuwsbrief-Heesterveld-augustus-2023.pdf",
     "asbestbrief": "Brief asbestonderzoek Heesterveld.pdf",
-    "pollProblemenInDeWoning": "https://docs.google.com/forms/d/e/1FAIpQLSe2k-sO9k190wRiHH--72RWba99d7CFxkfdp7z2_FYgRYe1lQ/viewform?embedded=true"
+    "pollProblemenInDeWoning": "https://docs.google.com/forms/d/e/1FAIpQLSe2k-sO9k190wRiHH--72RWba99d7CFxkfdp7z2_FYgRYe1lQ/viewform?embedded=true",
+    "technischeControle": "Brief technische opnames woningen.pdf",
+    "technischeOpname": "Brief_aankondiging_technische_onderzoeken.pdf",
+    "bewonersAvond2023": "Uitnodiging bewonersavond.pdf"
 };
+
+const indexNeedsWarningBlockMapping = {
+    "pollProblemenInDeWoning": false,
+    "nieuwsbriefAug": true,
+    "asbestbrief": false,
+    "technischeControle": false,
+    "technischeOpname": false,
+    "bewonersAvond2023": false
+}
 
 const indexHeaderMapping = { // order is important here! Add newest at the top, this is used for the index page feed list
     "pollProblemenInDeWoning": "Poll: Welke problemen ervaar jij in je woning?",
     "nieuwsbriefAug": "Nieuwsbrief van Ymere (augustus 2023)",
-    "asbestbrief": "Brief over het asbestonderzoek"
+    "asbestbrief": "Brief over het asbestonderzoek",
+    "technischeControle": "Herinneringsbrief over de technische opnames van de woningen",
+    "bewonersAvond2023": "Uitnodiging voor de bewonersavond februari 2023",
+    "technischeOpname": "Brief over de technische opnames van de woningen"
 }
 
 const indexHighlightsMapping = {
     "nieuwsbriefAug": "<b>Voorlopige</b> plannen voor de buitenkant van de flats. O.a.: HR++ glas en een nieuw ontwerp voor de buitenkant van de flats\n<b>Voorlopige</b> plannen voor de binnenkant van de woningen. O.a.: op orde brengen/vervangen van sanitair en keukens en mechanische ventilatie\nNieuwe bewonerscommissie",
     "asbestbrief": "De firma Wouters gaat asbestonderzoek uitvoeren binnen de woningen\nDit is een wettelijke verplichting en houdt niet in dat er verwacht wordt dat er veel asbest wordt aangetroffen\nOnderzoeken starten in september",
-    "pollProblemenInDeWoning": "Welke problemen ervaar jij in je woning en in de algemene ruimten?"
+    "pollProblemenInDeWoning": "Welke problemen ervaar jij in je woning en in de algemene ruimten?",
+    "technischeControle": "Reminder om een afspraak te plannen met Hemubo voor een technische opname van jouw woning\nDeze afspraken zijn nodig zodat de aannemer met de juiste informatie kan beginnen aan het groot onderhoud\nOverlast tijdens deze technische opname is minimaal",
+    "technischeOpname": "Hemubo neemt contact op met bewoners om een afspraak te plannen voor de technische opname van jouw woning\nDeze afspraken zijn nodig zodat de aannemer met de juiste informatie kan beginnen aan het groot onderhoud\nOverlast tijdens deze technische opname is minimaal",
+    "bewonersAvond2023": "Uitnodiging voor de bewonersavond op 13 februari 2023\nInformatie over de uitvoering van de technische onderzoeken\nOprichten bewonerscommissie"
 }
 
 function processParameters(){
@@ -61,9 +79,13 @@ function processParameters(){
         newContent += "<div class='curr-content'>";
 
         if (requestedContent.startsWith("poll")){
-            newContent += `<h1>${indexHeaderMapping[requestedContent]}</h1><p class="poll info">${indexHighlightsMapping[requestedContent]}</p><iframe src="${indexContentMapping[requestedContent]}" width="640" height="700" frameborder="0" marginheight="0" marginwidth="0"class="poll-form-iframe">Loading…</iframe>`;
+            newContent += `<h1>${indexHeaderMapping[requestedContent]}</h1><p class="poll info">${indexHighlightsMapping[requestedContent]}</p><iframe src="${indexContentMapping[requestedContent]}" max-width="640" height="700" frameborder="0" marginheight="0" marginwidth="0"class="poll-form-iframe">Loading…</iframe>`;
         } else {
-            newContent += `<h1>${indexHeaderMapping[requestedContent]}</h1><ul class="highlights-list">`;
+            newContent += `<h1>${indexHeaderMapping[requestedContent]}</h1>`;
+            if (indexNeedsWarningBlockMapping[requestedContent]) {
+                newContent += `<div class="warning-block"><b>Let op!</b> De informatie hieronder is <b>niet</b> definitief. De plannen voor het groot onderhoud kunnen dus nog wijzigen.</div>`;
+            }
+            newContent += `<ul class="highlights-list">`;
             const highlightsList = indexHighlightsMapping[requestedContent].split("\n");
             for (let highlight of highlightsList) { newContent += `<li>${highlight}</li>`; }
             newContent += `</ul><object data="./${indexContentMapping[requestedContent]}" type="application/pdf" class="brieven-docviewer"><p>Unable to display PDF file. <a href="./${indexContentMapping[requestedContent]}">Download</a> instead.</p></object>`;
@@ -83,4 +105,33 @@ function processParameters(){
         }
         document.getElementById("index-feed").innerHTML = feedlist;
     }
+}
+
+function prepareLetterSelect(){
+    let selectOptions = `<select data-role="select" id="letter-select" onchange="displayCorrectLetter()">`;
+    for (let item in indexHeaderMapping){
+        if (!item.startsWith("poll")){
+            selectOptions += `<option value="${item}">${indexHeaderMapping[item]}</option>`;
+        }
+    }
+    selectOptions += `</select>`;
+    document.getElementById("select-div").innerHTML = selectOptions;
+}
+
+function displayCorrectLetter(){
+    const requestedLetter = document.getElementById("letter-select").value;
+    const letterCode = getLetterCode(requestedLetter);
+    document.getElementById("letter-content").innerHTML = letterCode;
+}
+
+function getLetterCode(requestedContent){
+    let letterCode = `<h2>${indexHeaderMapping[requestedContent]}</h2>`;
+    if (indexNeedsWarningBlockMapping[requestedContent]) {
+        letterCode += `<div class="warning-block"><b>Let op!</b> De informatie hieronder is <b>niet</b> definitief. De plannen voor het groot onderhoud kunnen dus nog wijzigen.</div>`
+    }
+    letterCode += `<ul class="highlights-list">`;
+    const highlightsList = indexHighlightsMapping[requestedContent].split("\n");
+    for (let highlight of highlightsList) { letterCode += `<li>${highlight}</li>`; }
+    letterCode += `</ul><object data="./${indexContentMapping[requestedContent]}" type="application/pdf" class="brieven-docviewer"><p>Unable to display PDF file. <a href="./${indexContentMapping[requestedContent]}">Download</a> instead.</p></object>`;
+    return letterCode;
 }
