@@ -152,3 +152,9 @@ p {
 .select .option-list li.active{
     background-color: rgba(77, 0, 113, 0.5);
 }
+
+.bc-photo{
+    width: 80%;
+    max-width: 300px;
+    margin-left: 20px;
+}
