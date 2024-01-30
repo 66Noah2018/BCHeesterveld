@@ -35,8 +35,7 @@ const indexContentMapping = {
     "pollProblemenInDeWoning": "https://docs.google.com/forms/d/e/1FAIpQLSe2k-sO9k190wRiHH--72RWba99d7CFxkfdp7z2_FYgRYe1lQ/viewform?embedded=true",
     "technischeControle": "Brief technische opnames woningen.pdf",
     "technischeOpname": "Brief_aankondiging_technische_onderzoeken.pdf",
-    "bewonersAvond2023": "Uitnodiging bewonersavond.pdf",
-    "technischeOpnameReminder": "230908 Reminder2 brief technische opnames woningen Heesterveld.pdf"
+    "bewonersAvond2023": "Uitnodiging bewonersavond.pdf"
 };
 
 const indexNeedsWarningBlockMapping = {
@@ -45,12 +44,10 @@ const indexNeedsWarningBlockMapping = {
     "asbestbrief": false,
     "technischeControle": false,
     "technischeOpname": false,
-    "bewonersAvond2023": false,
-    "technischeOpnameReminder": false
+    "bewonersAvond2023": false
 }
 
 const indexHeaderMapping = { // order is important here! Add newest at the top, this is used for the index page feed list
-    "technischeOpnameReminder": "2e herinneringsbrief over de technische opnames van de woningen",
     "pollProblemenInDeWoning": "Poll: Welke problemen ervaar jij in je woning?",
     "nieuwsbriefAug": "Nieuwsbrief van Ymere (augustus 2023)",
     "asbestbrief": "Brief over het asbestonderzoek",
@@ -63,7 +60,6 @@ const indexHighlightsMapping = {
     "nieuwsbriefAug": "<b>Voorlopige</b> plannen voor de buitenkant van de flats. O.a.: HR++ glas en een nieuw ontwerp voor de buitenkant van de flats\n<b>Voorlopige</b> plannen voor de binnenkant van de woningen. O.a.: op orde brengen/vervangen van sanitair en keukens en mechanische ventilatie\nNieuwe bewonerscommissie",
     "asbestbrief": "De firma Wouters gaat asbestonderzoek uitvoeren binnen de woningen\nDit is een wettelijke verplichting en houdt niet in dat er verwacht wordt dat er veel asbest wordt aangetroffen\nOnderzoeken starten in september",
     "pollProblemenInDeWoning": "Welke problemen ervaar jij in je woning en in de algemene ruimten?",
-    "technischeOpnameReminder": "Reminder om een afspraak te plannen met Hemubo voor een technische opname van jouw woning\nJe bent <b>verplicht</b> om aan deze technische opname mee te werken\nDeze afspraken zijn nodig zodat de aannemer met de juiste informatie kan beginnen aan het groot onderhoud\nOverlast tijdens deze technische opname is minimaal", 
     "technischeControle": "Reminder om een afspraak te plannen met Hemubo voor een technische opname van jouw woning\nDeze afspraken zijn nodig zodat de aannemer met de juiste informatie kan beginnen aan het groot onderhoud\nOverlast tijdens deze technische opname is minimaal",
     "technischeOpname": "Hemubo neemt contact op met bewoners om een afspraak te plannen voor de technische opname van jouw woning\nDeze afspraken zijn nodig zodat de aannemer met de juiste informatie kan beginnen aan het groot onderhoud\nOverlast tijdens deze technische opname is minimaal",
     "bewonersAvond2023": "Uitnodiging voor de bewonersavond op 13 februari 2023\nInformatie over de uitvoering van de technische onderzoeken\nOprichten bewonerscommissie"

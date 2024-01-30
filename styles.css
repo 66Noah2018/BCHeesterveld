@@ -81,6 +81,7 @@ p {
     margin-left: 30px;
     border: 1px lightgray solid;
     border-radius: 5px;
+    max-height: 700px;
     overflow-y: auto;
 }
 
@@ -157,8 +158,4 @@ p {
     width: 80%;
     max-width: 300px;
     margin-left: 20px;
-}
-
-.clickable-area-active{
-    border: 2x red solid;
 }
