@@ -35,7 +35,8 @@ const indexContentMapping = {
     "pollProblemenInDeWoning": "https://docs.google.com/forms/d/e/1FAIpQLSe2k-sO9k190wRiHH--72RWba99d7CFxkfdp7z2_FYgRYe1lQ/viewform?embedded=true",
     "technischeControle": "Brief technische opnames woningen.pdf",
     "technischeOpname": "Brief_aankondiging_technische_onderzoeken.pdf",
-    "bewonersAvond2023": "Uitnodiging bewonersavond.pdf"
+    "bewonersAvond2023": "Uitnodiging bewonersavond.pdf",
+    "technischeControle2": "230908 Reminder2 brief technische opnames woningen Heesterveld.pdf"
 };
 
 const indexNeedsWarningBlockMapping = {
@@ -44,10 +45,12 @@ const indexNeedsWarningBlockMapping = {
     "asbestbrief": false,
     "technischeControle": false,
     "technischeOpname": false,
-    "bewonersAvond2023": false
+    "bewonersAvond2023": false,
+    "technischeControle2": false
 }
 
 const indexHeaderMapping = { // order is important here! Add newest at the top, this is used for the index page feed list
+    "technischeControle2": "REMINDER: Technische controles",
     "pollProblemenInDeWoning": "Poll: Welke problemen ervaar jij in je woning?",
     "nieuwsbriefAug": "Nieuwsbrief van Ymere (augustus 2023)",
     "asbestbrief": "Brief over het asbestonderzoek",
@@ -57,6 +60,7 @@ const indexHeaderMapping = { // order is important here! Add newest at the top, 
 }
 
 const indexHighlightsMapping = {
+    "technischeControle2": "REMINDER: Je bent verplicht mee te werken aan een technische controle van je woning. Wanneer Hemubo nog niet langs is geweest bij jouw woning en je daarvoor nog geen afspraak hebt, neem contact op met Hemubo",
     "nieuwsbriefAug": "<b>Voorlopige</b> plannen voor de buitenkant van de flats. O.a.: HR++ glas en een nieuw ontwerp voor de buitenkant van de flats\n<b>Voorlopige</b> plannen voor de binnenkant van de woningen. O.a.: op orde brengen/vervangen van sanitair en keukens en mechanische ventilatie\nNieuwe bewonerscommissie",
     "asbestbrief": "De firma Wouters gaat asbestonderzoek uitvoeren binnen de woningen\nDit is een wettelijke verplichting en houdt niet in dat er verwacht wordt dat er veel asbest wordt aangetroffen\nOnderzoeken starten in september",
     "pollProblemenInDeWoning": "Welke problemen ervaar jij in je woning en in de algemene ruimten?",
