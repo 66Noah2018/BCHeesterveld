@@ -15,6 +15,7 @@ function getCookie(){
 
 function cookieConsent(){
     let x = getCookie();
+    console.log(x)
     if (!x) {
         Metro.dialog.create({
             title: "Deze website gebruikt cookies",
