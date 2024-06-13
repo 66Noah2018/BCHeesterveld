@@ -1,3 +1,70 @@
+function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+        var s;
+        s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+    });
+}
+
+function getCookie(){
+    return document.cookie.split("; ").find((row) => row.startsWith("bcheesterveld="))?.split("=")[1];
+} // returns null if it doesn't exist, else none, all or functional
+
+function cookieConsent(){
+    let x = getCookie();
+    console.log(x)
+    let consent = null; // options: none, all, functional
+    if (!x) {
+        Metro.dialog.create({
+            title: "Deze website gebruikt cookies",
+            content: "Om embedded instagram posts weer te geven gebruiken wij cookies. Wij plaatsen geen cookies zonder expliciete toestemming",
+            overlayClickClose: false,
+            actions: [
+                {
+                    caption: "Alles weigeren",
+                    cls: "js-dialog-close",
+                    onclick: function(){
+                        processConsent("none");
+                    }
+                },
+                {
+                    caption: "Enkel functionele cookies",
+                    cls: "js-dialog-close",
+                    onclick: function(){
+                        processConsent("functional");
+                    }
+                },
+                {
+                    caption: "Alles toestaan",
+                    cls: "js-dialog-close",
+                    onclick: function(){
+                        processConsent("all");
+                    }
+                }
+            ]
+        })
+    } 
+}
+
+function processConsent(consent){
+    if (consent != "none"){ // none means not even 'store decision' cookie
+        // update cookie
+        const d = new Date();
+        d.setTime(d.getTime() + (365*24*60*60*1000)); // store for one year
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = "bcheesterveld=" + consent + ";" + expires + ";path=/";
+        console.log("bcheesterveld=" + consent + ";" + expires + ";path=/")
+        if (consent == "all"){
+            // insta ding
+            //<script async src="https://www.instagram.com/embed.js"></script>
+            loadScript("https://www.instagram.com/embed.js").catch(loadScript.bind(null, localSource)).then();
+        }
+    }
+}
+
 const infoBlockContent = {
     "informerenHuurders": "De corporatie informeert de huurders, de bewonerscommissie (indien aanwezig), de huurderskoepel en de gemeente over het startbesluit.",
     "oprichtenBC": "De corporatie en de huurderskoepel hebben een inspanningsverplichting om een bewonerscommissie op te richten in projecten waar het reguliere participatie proces van de Kaderafspraken van toepassing is. Als dit niet lukt wordt dit schriftelijk vastgelegd.",
