@@ -15,8 +15,6 @@ function getCookie(){
 
 function cookieConsent(){
     let x = getCookie();
-    console.log(x)
-    let consent = null; // options: none, all, functional
     if (!x) {
         Metro.dialog.create({
             title: "Deze website gebruikt cookies",
@@ -56,7 +54,6 @@ function processConsent(consent){
         d.setTime(d.getTime() + (365*24*60*60*1000)); // store for one year
         let expires = "expires="+ d.toUTCString();
         document.cookie = "bcheesterveld=" + consent + ";" + expires + ";path=/";
-        console.log("bcheesterveld=" + consent + ";" + expires + ";path=/")
         if (consent == "all"){
             // insta ding
             //<script async src="https://www.instagram.com/embed.js"></script>
