@@ -60,7 +60,7 @@ function processConsent(consent){
         if (consent == "all"){
             // insta ding
             //<script async src="https://www.instagram.com/embed.js"></script>
-            loadScript("https://www.instagram.com/embed.js").catch(loadScript.bind(null, localSource)).then();
+            loadScript("https://www.instagram.com/embed.js").catch(loadScript.bind(null)).then();
         }
     }
 }
@@ -204,7 +204,10 @@ function processParameters(){
             newContent += `<div class='next-content'><a class="fas fa-chevron-right fa-xl" href=${nextContentLink}></a></div>`;
         }
         document.getElementById("index-content").innerHTML = newContent;
-        window.instgrm.Embeds.process();
+        try{
+            window.instgrm.Embeds.process();
+        }
+        catch(err){}
     } else { // load feed list
         let feedlist = ``
         for (let key in indexHeaderMapping) { 
