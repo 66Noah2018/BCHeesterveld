@@ -45,6 +45,9 @@ function cookieConsent(){
             ]
         })
     } 
+    else {
+        processConsent(x)
+    }
 }
 
 function processConsent(consent){
