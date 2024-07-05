@@ -109,7 +109,8 @@ const indexContentMapping = {
     "uitnodigingBewonersavonden": "Uitnodiging Heesterveld informatiebijeenkomsten Ymere.pdf",
     "samenvattingProjectplan": "20240416 Concept Samenvatting Projectplan Heesterveld.pdf",
     "conceptPlan": "Concept Projectplan Heesterveld april 2024.pdf",
-    "reminderRaadpleging": "<h2>Enquete voor het advies aan Ymere</h2>\n<p>Twee weken terug hebben alle bewoners (namens ons) van Stichting !WOON een enquete gekregen (op papier en een link via de mail) over de plannen van Ymere. Vanaf vorige week komen er ook enqueteurs langs (met een Stichting !WOON badge waar je om mag vragen) om de respons zo hoog mogelijk te krijgen. We hebben jullie feedback namelijk heel hard nodig! Jullie feedback wordt gebruikt om het gekwalificeerd advies aan Ymere te schrijven. Op basis van dit advies kan het concept projectplan nog aangepast worden. Je hebt nu dus nog invloed op de inhoud van het projectplan. Hoe meer feedback we hebben, hoe beter het advies aan Ymere alle huurders representeert. </p>\n\n<h3>Wij krijgen <b>geen persoonsgegevens</b> van jullie</h3>\n<p>De rapportage die wij van Stichting !WOON krijgen is anoniem, wij hebben dus geen toegang tot namen, huisnummers of handschriften. Er is geen enkele manier waarop wij (of Ymere) die informatie terug kunnen leiden naar een individuele huurder. De enquete is dus dé plek om je (ongezouten) mening te geven op het projectplan</p>\n\n<h3>Loop je vast?</h3>\n<p>Als je ergens vast loopt m.b.t. het concept projectplan, de enquete of in het algemeen over de renovatie, neem vooral contact op met ons of de mensen van !Woon of Ymere. We zijn er om jullie te helpen en te representeren</p>"
+    "reminderRaadpleging": "<h2>Enquete voor het advies aan Ymere</h2>\n<p>Twee weken terug hebben alle bewoners (namens ons) van Stichting !WOON een enquete gekregen (op papier en een link via de mail) over de plannen van Ymere. Vanaf vorige week komen er ook enqueteurs langs (met een Stichting !WOON badge waar je om mag vragen) om de respons zo hoog mogelijk te krijgen. We hebben jullie feedback namelijk heel hard nodig! Jullie feedback wordt gebruikt om het gekwalificeerd advies aan Ymere te schrijven. Op basis van dit advies kan het concept projectplan nog aangepast worden. Je hebt nu dus nog invloed op de inhoud van het projectplan. Hoe meer feedback we hebben, hoe beter het advies aan Ymere alle huurders representeert. </p>\n\n<h3>Wij krijgen <b>geen persoonsgegevens</b> van jullie</h3>\n<p>De rapportage die wij van Stichting !WOON krijgen is anoniem, wij hebben dus geen toegang tot namen, huisnummers of handschriften. Er is geen enkele manier waarop wij (of Ymere) die informatie terug kunnen leiden naar een individuele huurder. De enquete is dus dé plek om je (ongezouten) mening te geven op het projectplan</p>\n\n<h3>Loop je vast?</h3>\n<p>Als je ergens vast loopt m.b.t. het concept projectplan, de enquete of in het algemeen over de renovatie, neem vooral contact op met ons of de mensen van !Woon of Ymere. We zijn er om jullie te helpen en te representeren</p>",
+    "definitiefProjectplan": "Projectplan-Heesterveld-2024.pdf"
 };
 
 const indexNeedsWarningBlockMapping = {
@@ -124,10 +125,12 @@ const indexNeedsWarningBlockMapping = {
     "uitnodigingBewonersavonden": false,
     "samenvattingProjectplan": true,
     "conceptPlan": true,
-    "reminderRaadpleging": false
+    "reminderRaadpleging": false,
+    "definitiefProjectplan": true
 }
 
 const indexHeaderMapping = { // order is important here! Add newest at the top, this is used for the index page feed list
+    "definitiefProjectplan": "Definitief projectplan",
     "reminderRaadpleging": "Reminder om de enquete in te vullen!",
     "conceptPlan": "Definitieve conceptversie van het projectplan voor het groot onderhoud van de Heesterveld",
     "samenvattingProjectplan":"Samenvatting van het concept projectplan",
@@ -154,7 +157,8 @@ const indexHighlightsMapping = {
     "uitnodigingBewonersavonden": "Op 24 en 25 april vinden er bewonersavonden plaats, van 16:00 tot 18:00 en van 19:00 tot 21:00 op Heesterveld 75\nHeb je vragen over de informatie die je van Ymere hebt ontvangen, het concept projectplan op deze website of wil je kennis maken met de mensen die aan dit project werken, kom dan vooral langs!",
     "samenvattingProjectplan": "Ymere wil verschillende zaken binnen en buiten je woning aanpakken tijdens het groot onderhoud\nDit is de samenvatting van het <b>concept</b> projectplan, de plannen kunnen nog wijzigen naar aanleiding van de feedback van huurders en het advies van de bewonerscommissie\nHeb je hier vragen over? Kom dan naar de bewonersavonden op 24 en 25 april!",
     "conceptPlan": "Ymere heeft met onze input het onderstaande <b>concept</b> projectplan opgesteld\nDit concept beschrijft de voorgenomen werkzaamheden aan onze woningen en de blokken in het algemeen\nOp basis van jullie feedback in de vragenlijst die je van !Woon krijgt en op de bewonersavonden, brengen wij nog een advies uit aan Ymere. Het projectplan kan naar aanleiding daarvan nog wijzigen. Het projectplan is pas definitief als 70% van alle huurders heeft ingestemd met het projectplan als gepresenteerd\nEr wordt verwezen naar plattegronden, deze zijn nog niet beschikbaar. Zodra ze beschikbaar zijn, delen wij deze op de website",
-    "reminderRaadpleging": "Vul alsjeblieft de enquete in!"
+    "reminderRaadpleging": "Vul alsjeblieft de enquete in!",
+    "definitiefProjectplan": "Dit is de definitieve versie van het projectplan voor de renovatie van de Heesterveld \n Dit plan is <b>pas rechtsgeldig wanneer minimaal 70% van de bewoners via de akkoordverklaring akkoord hebben gegeven</b> \n Op de akkoordverklaring kun je ook aangeven of je een <b>videofoon</b> zou willen, ook hier moet 70% akkoord mee gaan \n Enkel huurverhoging wanneer minimaal 70% van de huurders een videofoon wil"
 }
 
 function processParameters(){
