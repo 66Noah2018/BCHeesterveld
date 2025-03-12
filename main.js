@@ -72,8 +72,9 @@ function processConsent(consent){
             //     gtag('config', 'G-BC6RZHGQ18');
             // </script>
             loadScript("https://www.googletagmanager.com/gtag/js?id=G-BC6RZHGQ18").catch(loadScript.bind(null)).then();
-            document.head.append("<script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-BC6RZHGQ18'); </script>")
-            // loadScript().catch(loadScript.bind(null).then());
+            let script = document.createElement("script")
+            script.innerHTML = "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-BC6RZHGQ18');"
+            document.head.appendChild(script)
         }
     }
 }
