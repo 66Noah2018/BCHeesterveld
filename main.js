@@ -19,7 +19,7 @@ function cookieConsent(){
     if (!x) {
         Metro.dialog.create({
             title: "Deze website gebruikt cookies",
-            content: "Om embedded instagram posts weer te geven gebruiken wij cookies. Wij plaatsen geen cookies zonder expliciete toestemming",
+            content: "Om embedded instagram posts weer te geven en het gebruik van onze website te monitoren gebruiken wij cookies. Wij plaatsen geen cookies zonder expliciete toestemming",
             overlayClickClose: false,
             actions: [
                 {
@@ -62,6 +62,18 @@ function processConsent(consent){
             // insta ding
             //<script async src="https://www.instagram.com/embed.js"></script>
             loadScript("https://www.instagram.com/embed.js").catch(loadScript.bind(null)).then();
+
+            // <script async src="https://www.googletagmanager.com/gtag/js?id=G-BC6RZHGQ18"></script>
+            //     <script>
+            //     window.dataLayer = window.dataLayer || [];
+            //     function gtag(){dataLayer.push(arguments);}
+            //     gtag('js', new Date());
+
+            //     gtag('config', 'G-BC6RZHGQ18');
+            // </script>
+            loadScript("https://www.googletagmanager.com/gtag/js?id=G-BC6RZHGQ18").catch(loadScript.bind(null)).then();
+            document.head.append("<script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-BC6RZHGQ18'); </script>")
+            // loadScript().catch(loadScript.bind(null).then());
         }
     }
 }
