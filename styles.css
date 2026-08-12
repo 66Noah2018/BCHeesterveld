@@ -16,7 +16,8 @@ h1, h2, h3, h4, h5, p {
 }
 
 h1, h2, h3, h4, h5 {
-    color: #4d0071;
+    /* color: #4d0071; */
+    color: #1E40AF;
 }
 
 h1{
@@ -81,29 +82,36 @@ p {
     margin-left: 10px;
 }
 
-#index-feed{
-    max-width: 500px;
+.feed-list{
+    width: 45vw;
     margin-left: 30px;
     border: 1px lightgray solid;
     border-radius: 5px;
     overflow-y: auto;
+    margin-right: 10px;
+    height: 80vh;
 }
 
-#index-feed .title {
+.feed-list .title {
     padding: 0;
     text-align: center;
 }
 
-#index-feed .label{
+.feed-list .label{
     font-size: larger;
 }
 
-#index-feed .second-label{
+.feed-list .second-label{
     font-size: small;
 }
 
+.feed-list h3{
+    margin-top: 10px;
+}
+
 .prev-content a, .next-content a{
-    color: #4d0071;
+    /* color: #4d0071; */
+    color: #1E40AF;
     text-decoration: none;
 }
 
@@ -124,7 +132,8 @@ p {
 }
 
 .active-menu-link{
-    background-color: rgba(77, 0, 113, 0.5) !important;
+    /* background-color: rgba(77, 0, 113, 0.5) !important; */
+    background-color: rgba(30, 64, 175, 0.5) !important;
     color: white !important;
 }
 
@@ -155,7 +164,8 @@ p {
 }
 
 .select .option-list li.active{
-    background-color: rgba(77, 0, 113, 0.5);
+    /* background-color: rgba(77, 0, 113, 0.5); */
+    background-color: rgba(30, 64, 175, 0.5);
 }
 
 .bc-photo{
@@ -187,4 +197,30 @@ footer {
 
 .instagram-media{
     margin-left: 10px !important;
+}
+
+.logo-btn{
+    display: flex;
+    margin: 0px auto;
+    border: 1px gray solid;
+    border-radius: 5px;
+    padding: 10px;
+    height: 85px;
+    width: fit-content;
+}
+
+.logo-btn-img{
+    width: 120%;
+}
+
+/* Metro flat color shift on hover */
+.logo-btn:hover {
+    background-color: var(--color-menu-item-hover-bg, rgba(0, 0, 0, 0.05));
+    color: var(--color-menu-item-hover-fg, inherit);
+}
+
+/* Optional Metro active press state */
+.logo-btn:active {
+    background-color: var(--color-menu-item-active-bg, rgba(0, 0, 0, 0.1));
+    color: var(--color-menu-item-active-fg, inherit);
 }
