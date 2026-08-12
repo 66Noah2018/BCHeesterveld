@@ -14,14 +14,22 @@ class newsletter {
 }
 
 function loadScript(src) {
-    return new Promise(function (resolve, reject) {
-        var s;
-        s = document.createElement('script');
-        s.src = src;
-        s.onload = resolve;
-        s.onerror = reject;
-        document.head.appendChild(s);
-    });
+  const existingScript = document.querySelector(`script[src="${src}"]`);
+
+  if (existingScript) {
+    return Promise.resolve(existingScript);
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+
+    script.src = src;
+    script.async = true;
+    script.onload = () => resolve(script);
+    script.onerror = () => reject(new Error(`Could not load: ${src}`));
+
+    document.head.appendChild(script);
+  });
 }
 
 function getCookie(){
@@ -30,61 +38,107 @@ function getCookie(){
 
 function cookieConsent(){
     let chosenCookieOption = getCookie();
-    console.log(chosenCookieOption)
+
     if (!chosenCookieOption) {
-        Metro.dialog.create({
-            title: "Deze website gebruikt cookies",
-            content: "Om embedded instagram posts weer te geven en het gebruik van onze website te monitoren gebruiken wij cookies. Wij plaatsen geen cookies zonder expliciete toestemming",
-            overlayClickClose: false,
-            actions: [
-                {
-                    caption: "Enkel functionele cookies",
-                    cls: "js-dialog-close",
-                    onclick: function(){
-                        processConsent("functional");
-                    }
-                },
-                {
-                    caption: "Alles toestaan",
-                    cls: "js-dialog-close",
-                    onclick: function(){
-                        processConsent("all");
-                    }
-                }
-            ]
-        })
-    } 
-    else {
-        processConsent(chosenCookieOption)
+    const modalContainer = document.createElement("div");
+
+    modalContainer.innerHTML = `
+        <div
+        class="modal fade"
+        id="cookieConsentModal"
+        tabindex="-1"
+        aria-labelledby="cookieConsentTitle"
+        aria-describedby="cookieConsentDescription"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="cookieConsentTitle">
+                Deze website gebruikt cookies
+                </h2>
+            </div>
+            <div class="modal-body" id="cookieConsentDescription">
+                Om embedded Instagram-berichten weer te geven en het gebruik van
+                onze website te monitoren gebruiken wij cookies. Wij plaatsen geen
+                cookies zonder expliciete toestemming.
+            </div>
+            <div class="modal-footer flex-column align-items-stretch gap-2">
+                <button type="button" class="btn btn-outline-secondary" id="cookieFunctional">
+                Enkel functionele cookies
+                </button>
+                <button type="button" class="btn btn-primary" id="cookieAll">
+                Alles toestaan
+                </button>
+            </div>
+            </div>
+        </div>
+        </div>`;
+
+    const modalElement = modalContainer.firstElementChild;
+    document.body.appendChild(modalElement);
+
+    const cookieModal = new bootstrap.Modal(modalElement, {
+        backdrop: "static",
+        keyboard: false
+    });
+
+    document.getElementById("cookieFunctional").addEventListener("click", () => {
+        processConsent("functional");
+        cookieModal.hide();
+    });
+
+    document.getElementById("cookieAll").addEventListener("click", () => {
+        processConsent("all");
+        cookieModal.hide();
+    });
+
+    cookieModal.show();
+    } else {
+    processConsent(chosenCookieOption);
     }
 }
 
-function processConsent(consent){
-    if (consent != "none"){ // none means not even 'store decision' cookie
-        // update cookie
-        const d = new Date();
-        d.setTime(d.getTime() + (365*24*60*60*1000)); // store for one year
-        let expires = "expires="+ d.toUTCString();
-        document.cookie = "bcheesterveld=" + consent + ";" + expires + ";path=/";
-        if (consent == "all"){
-            // insta ding
-            //<script async src="https://www.instagram.com/embed.js"></script>
-            loadScript("https://www.instagram.com/embed.js").catch(loadScript.bind(null)).then();
+function processConsent(consent) {
+  if (consent !== "functional" && consent !== "all") {
+    return;
+  }
 
-            // <script async src="https://www.googletagmanager.com/gtag/js?id=G-BC6RZHGQ18"></script>
-            //     <script>
-            //     window.dataLayer = window.dataLayer || [];
-            //     function gtag(){dataLayer.push(arguments);}
-            //     gtag('js', new Date());
+  const expires = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
 
-            //     gtag('config', 'G-BC6RZHGQ18');
-            // </script>
-            loadScript("https://www.googletagmanager.com/gtag/js?id=G-BC6RZHGQ18").catch(loadScript.bind(null)).then();
-            let script = document.createElement("script")
-            script.innerHTML = "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-BC6RZHGQ18');"
-            document.head.appendChild(script)
-        }
-    }
+  document.cookie = [
+    `bcheesterveld=${encodeURIComponent(consent)}`,
+    `expires=${expires.toUTCString()}`,
+    "path=/",
+    "SameSite=Lax",
+    location.protocol === "https:" ? "Secure" : ""
+  ].filter(Boolean).join("; ");
+
+  if (consent !== "all") {
+    return;
+  }
+
+  // Google Analytics
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function () {
+    window.dataLayer.push(arguments);
+  };
+
+  window.gtag("js", new Date());
+  window.gtag("config", "G-BC6RZHGQ18");
+
+  loadScript("https://www.googletagmanager.com/gtag/js?id=G-BC6RZHGQ18")
+    .catch(error => console.error("Google Analytics could not load:", error));
+
+  // Instagram embeds
+  loadScript("https://www.instagram.com/embed.js")
+    .then(() => {
+      if (window.instgrm?.Embeds) {
+        window.instgrm.Embeds.process();
+      }
+    })
+    .catch(error => console.error("Instagram embed script could not load:", error));
 }
 
 const infoBlockContent = {
@@ -290,10 +344,18 @@ function getFeed(newsletterList, org){
             const highlights = item.bulletpoints.replaceAll("\n", ". ")
             const highlightsShortString = highlights.split(" ").slice(0, 20).join(" ") + "...";
             const link = "./Newsletters.html?org=" + org + "&requestedContent=" + item.id
-            feedlist += `<li onclick="location.href='${link}'"><span class="label">${item.header}</span><span class="second-label">${highlightsShortString}</span></li>`;
+            feedlist += `
+                <a href='${link}' class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">${item.header}</h5>
+                    </div>
+                    <p class="mb-1">${highlightsShortString}</p>
+                </a>
+            `
         }
     } else {
-        feedlist += `<li><span class="label">Nog geen items</span><span class="second-label">Kijk later nog eens</span></li>`;
+        feedlist += `
+            <a class="list-group-item"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">Nog geen items</h5></div><p class="mb-1">Kijk later nog eens</p></a>`;
     }
     
     return feedlist
@@ -305,4 +367,112 @@ function loadFeeds(){
 
     document.getElementById("feed-hemubo").innerHTML = hemuboFeed
     document.getElementById("feed-ymere").innerHTML = ymereFeed
+}
+
+function initWorksCarousel() {
+  const AUTOPLAY_INTERVAL = 4000;
+
+  const wrapper    = document.getElementById("worksCarousel");
+  const track      = document.getElementById("worksTrack");
+  const dotsEl     = document.getElementById("worksDots");
+  const prevBtn    = document.getElementById("worksPrev");
+  const nextBtn    = document.getElementById("worksNext");
+  const pauseBadge = document.getElementById("worksPausedBadge");
+  const isSingle = carouselData.length === 1;
+    
+  let current = 0;
+  let paused  = false;
+  let timer   = null;
+
+  // Build slides and dots
+  carouselData.forEach((item, i) => {
+    const slide = document.createElement("div");
+    slide.className = "works-slide" + (i === 0 ? " active-slide" : "");
+    slide.dataset.index = i;
+
+    const impactsHtml = item.impacts.map(impact => {
+    const emoji = impactEmoji[impact.emojiKey] ?? impactEmoji.generalNotice;
+
+    return `
+        <span class="works-impact-badge">
+        <span class="badge-emoji" aria-hidden="true">${emoji}</span>
+        <span>${impact.text}</span>
+        </span>`;
+    }).join("");
+
+    const weeksHtml = item.weeks.map(w =>
+      `<span class="works-week-pill">${w}</span>`
+    ).join("");
+
+    slide.innerHTML = `
+      <div class="works-slide-inner">
+        <p class="works-slide-title">${item.title}</p>
+        <p class="works-slide-desc">${item.description}</p>
+        <div class="works-impacts">${impactsHtml}</div>
+        <div class="works-slide-weeks">
+          <span class="week-label">📅 Gedurende:</span>
+          ${weeksHtml}
+        </div>
+      </div>`;
+
+    track.appendChild(slide);
+
+    if (!isSingle) {
+        const dot = document.createElement("button");
+        dot.className = "works-dot" + (i === 0 ? " active" : "");
+        dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+        dot.dataset.index = i;
+        dotsEl.appendChild(dot);
+    }
+  });
+
+  if (isSingle) {
+    wrapper.classList.add("single-slide");
+    prevBtn.style.display = "none";
+    nextBtn.style.display = "none";
+    dotsEl.style.display  = "none";
+    return; // skip all timer, event, and navigation logic
+    }
+
+  const slides = track.querySelectorAll(".works-slide");
+  const dots   = dotsEl.querySelectorAll(".works-dot");
+
+  function goTo(index, resumeAfter = false) {
+    current = (index + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle("active-slide", i === current));
+    dots.forEach((d, i)   => d.classList.toggle("active", i === current));
+    track.style.transform = `translateX(-${slides[0].getBoundingClientRect().width * current}px)`;
+    if (resumeAfter) resume();
+  }
+
+  function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => { if (!paused) goTo(current + 1); }, AUTOPLAY_INTERVAL);
+  }
+
+  function pause() {
+    paused = true;
+    pauseBadge.classList.add("visible");
+  }
+
+  function resume() {
+    paused = false;
+    pauseBadge.classList.remove("visible");
+    startTimer();
+  }
+
+  slides.forEach(slide => {
+    slide.addEventListener("click", () => {
+      const idx = parseInt(slide.dataset.index);
+      if (idx !== current) { goTo(idx); pause(); }
+      else { paused ? resume() : pause(); }
+    });
+  });
+
+  prevBtn.addEventListener("click", () => goTo(current - 1, true));
+  nextBtn.addEventListener("click", () => goTo(current + 1, true));
+  dots.forEach(dot => dot.addEventListener("click", () => goTo(parseInt(dot.dataset.index), true)));
+
+  goTo(0);
+  startTimer();
 }

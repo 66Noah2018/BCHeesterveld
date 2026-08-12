@@ -1,5 +1,5 @@
-FOLDER_YMERE = "ymere/"
-FOLDER_HEMUBO = "hemubo/"
+const FOLDER_YMERE = "ymere/"
+const FOLDER_HEMUBO = "hemubo/"
 
 const YMERE = [
     new newsletter(
@@ -133,4 +133,59 @@ const YMERE = [
 
 const HEMUBO = [
 
+];
+
+const impactEmoji = Object.freeze({
+  noise: "🔊",
+  noPower: "⚡",
+  noWater: "🚱",
+  noParking: "🚫🅿️",
+  roadClosure: "⛔",
+  generalNotice: "ℹ️"
+});
+
+const carouselData = [
+  {
+    title: "Roof Replacement — Block A",
+    description: "The contractor will remove and replace the flat roof on Block A. Expect debris netting around the building entrance.",
+    impacts: [
+      { emojiKey: "noise", text: "Lots of noise" },
+      { emojiKey: "noParking", text: "No parking (north side)" },
+    ],
+    weeks: ["Week 32", "Week 33", "Week 34"],
+  },
+  {
+    title: "Main Water Pipe Upgrade",
+    description: "Replacement of the primary water supply pipe running under the courtyard. Water will be shut off during working hours.",
+    impacts: [
+      { emojiKey: "noWater", text: "No water (07:00–17:00)" },
+      { emojiKey: "roadClosure", text: "Courtyard closed" },
+    ],
+    weeks: ["Week 35"],
+  },
+  {
+    title: "Electrical Panel Replacement",
+    description: "The main distribution board in the basement will be replaced. Power will be cut to the entire building in planned windows.",
+    impacts: [
+      { emojiKey: "noPower", text: "No power (planned windows)" }
+    ],
+    weeks: ["Week 36", "Week 37"],
+  },
+  {
+    title: "Facade Drilling & Anchoring",
+    description: "New facade anchors will be drilled into the exterior walls on all floors. Expect significant vibration and noise throughout the day.",
+    impacts: [
+      { emojiKey: "noise", text: "Lots of noise" }
+    ],
+    weeks: ["Week 38", "Week 39", "Week 40"],
+  },
+  {
+    title: "Underground Parking Resurfacing",
+    description: "The underground car park floor will be ground down and resurfaced. The car park will be completely inaccessible.",
+    impacts: [
+      { emojiKey: "noParking", text: "No parking (underground)" },
+      { emojiKey: "noise", text: "Noise & fumes" },
+    ],
+    weeks: ["Week 41", "Week 42"],
+  },
 ];

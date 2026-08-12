@@ -14,40 +14,74 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- metro 4 -->
-        <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
-        <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+        <!-- <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css"> -->
+        <!-- <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script> -->
         <!-- fontawesome v5 -->
         <script src="https://kit.fontawesome.com/e64cafaf4a.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="./styles.css">
         <script src="./main.js"></script>
         <script src="./consts.js"></script>
-        <!-- bootstrap icons -->
+        <!-- bootstrap -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
     </head>
-    <body onload="cookieConsent();loadCarousel();loadFeeds()">
+    <body onload="cookieConsent();loadCarousel();loadFeeds();initWorksCarousel()">
         <div class="header">
-            <ul class="h-menu">
-                <li><a href="./index.html"><img src="./assets/BC-logo.jpg" width="46" height="32"></a></li>
-                <li><a href="./RenovationStages.html">Algemene informatie</a></li>
-                <li><a href="./OrgSelect.html">Nieuwsbrieven</a></li>
-                <li><a href="./AboutTheBC.html">BC Heesterveld</a></li>
-                <li><a href="./Contact.html">Contact</a></li>
-                <div class="links">
-                    <a class="fa-solid fa-at fa-sm" href="mailto:bcheesterveld@gmail.com"></a>
-                    <a class="fa-brands fa-whatsapp fa-sm" href="https://chat.whatsapp.com/BcTvVk2yHCGFrMXAPfEzaD"></a>
-                    <a class="fa-brands fa-facebook fa-sm" href="https://www.facebook.com/HeesterveldCreativeCommunity/"></a>
-                    <a class="fa-brands fa-instagram fa-sm" href="https://www.instagram.com/heesterveldcc/?hl=en"></a>
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="./index.html"><img src="./assets/BC-logo.jpg" width="46" height="32"></a>
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="./RenovationStages.html">Algemene informatie</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./OrgSelect.html">Nieuwsbrieven</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./AboutTheBC.html">BC Heesterveld</a></li>
+                        <li class="nav-item"><a class="nav-link" href="./Contact.html">Contact</a></li>
+                    </ul>
+                    <span class="navbar-text">
+                        <div class="links">
+                            <a class="fa-solid fa-at fa-sm" href="mailto:bcheesterveld@gmail.com"></a>
+                            <a class="fa-brands fa-whatsapp fa-sm" href="https://chat.whatsapp.com/BcTvVk2yHCGFrMXAPfEzaD"></a>
+                            <a class="fa-brands fa-facebook fa-sm" href="https://www.facebook.com/HeesterveldCreativeCommunity/"></a>
+                            <a class="fa-brands fa-instagram fa-sm" href="https://www.instagram.com/heesterveldcc/?hl=en"></a>
+                        </div>
+                    </span>
                 </div>
-            </ul>
+            </nav>
         </div>
         <div class="content" id="index-content">
             <h1>Aankomende werkzaamheden met grote impact</h1>
-            <p>TODO: carousel</p>
+            <div class="container my-5">
+                <div class="works-carousel-wrapper position-relative" id="worksCarousel">
+
+                    <span class="works-paused-badge" id="worksPausedBadge">⏸ Paused</span>
+
+                    <!-- Prev button -->
+                    <button class="works-carousel-btn prev" id="worksPrev" aria-label="Previous">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#495057" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                    </button>
+
+                    <!-- Track -->
+                    <div class="works-carousel-track" id="worksTrack"></div>
+
+                    <!-- Next button -->
+                    <button class="works-carousel-btn next" id="worksNext" aria-label="Next">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#495057" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                    </button>
+                </div>
+
+                <!-- Dot indicators -->
+                <div class="works-dots" id="worksDots"></div>
+            </div>
 
             <h1>Updates</h1>
             <div class="feeds">
-                <ul class="feed-list" id="feed-hemubo" style="float: left"></ul>
-                <ul class="feed-list" id="feed-ymere"></ul>
+                <ul class="feed-list list-group" id="feed-hemubo" style="float: left"></ul>
+                <ul class="feed-list list-group" id="feed-ymere"></ul>
             </div>
             
             <h1>Schijf je in voor de mailing list</h1>
