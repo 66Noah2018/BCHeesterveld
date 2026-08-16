@@ -1,12 +1,35 @@
+class newsletter {
+    constructor(id, header, bulletpoints, content, needsInfoBlock, type){
+        this.id = id
+        this.header = header
+        this.bulletpoints = bulletpoints
+        this.content = content
+        this.needsInfoBlock = needsInfoBlock
+        this.type = type
+    }
+
+    get getId(){
+        return parseInt(this.id)
+    }
+}
+
 function loadScript(src) {
-    return new Promise(function (resolve, reject) {
-        var s;
-        s = document.createElement('script');
-        s.src = src;
-        s.onload = resolve;
-        s.onerror = reject;
-        document.head.appendChild(s);
-    });
+  const existingScript = document.querySelector(`script[src="${src}"]`);
+
+  if (existingScript) {
+    return Promise.resolve(existingScript);
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+
+    script.src = src;
+    script.async = true;
+    script.onload = () => resolve(script);
+    script.onerror = () => reject(new Error(`Could not load: ${src}`));
+
+    document.head.appendChild(script);
+  });
 }
 
 function getCookie(){
@@ -14,69 +37,108 @@ function getCookie(){
 } // returns null if it doesn't exist, else none, all or functional
 
 function cookieConsent(){
-    let x = getCookie();
-    console.log(x)
-    if (!x) {
-        Metro.dialog.create({
-            title: "Deze website gebruikt cookies",
-            content: "Om embedded instagram posts weer te geven en het gebruik van onze website te monitoren gebruiken wij cookies. Wij plaatsen geen cookies zonder expliciete toestemming",
-            overlayClickClose: false,
-            actions: [
-                {
-                    caption: "Alles weigeren",
-                    cls: "js-dialog-close",
-                    onclick: function(){
-                        processConsent("none");
-                    }
-                },
-                {
-                    caption: "Enkel functionele cookies",
-                    cls: "js-dialog-close",
-                    onclick: function(){
-                        processConsent("functional");
-                    }
-                },
-                {
-                    caption: "Alles toestaan",
-                    cls: "js-dialog-close",
-                    onclick: function(){
-                        processConsent("all");
-                    }
-                }
-            ]
-        })
-    } 
-    else {
-        processConsent(x)
+    let chosenCookieOption = getCookie();
+
+    if (!chosenCookieOption) {
+    const modalContainer = document.createElement("div");
+
+    modalContainer.innerHTML = `
+        <div
+        class="modal fade"
+        id="cookieConsentModal"
+        tabindex="-1"
+        aria-labelledby="cookieConsentTitle"
+        aria-describedby="cookieConsentDescription"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="cookieConsentTitle">
+                Deze website gebruikt cookies
+                </h2>
+            </div>
+            <div class="modal-body" id="cookieConsentDescription">
+                Om embedded Instagram-berichten weer te geven en het gebruik van
+                onze website te monitoren gebruiken wij cookies. Wij plaatsen geen
+                cookies zonder expliciete toestemming.
+            </div>
+            <div class="modal-footer flex-column align-items-stretch gap-2">
+                <button type="button" class="btn btn-outline-secondary" id="cookieFunctional">
+                Enkel functionele cookies
+                </button>
+                <button type="button" class="btn btn-primary" id="cookieAll">
+                Alles toestaan
+                </button>
+            </div>
+            </div>
+        </div>
+        </div>`;
+
+    const modalElement = modalContainer.firstElementChild;
+    document.body.appendChild(modalElement);
+
+    const cookieModal = new bootstrap.Modal(modalElement, {
+        backdrop: "static",
+        keyboard: false
+    });
+
+    document.getElementById("cookieFunctional").addEventListener("click", () => {
+        processConsent("functional");
+        cookieModal.hide();
+    });
+
+    document.getElementById("cookieAll").addEventListener("click", () => {
+        processConsent("all");
+        cookieModal.hide();
+    });
+
+    cookieModal.show();
+    } else {
+    processConsent(chosenCookieOption);
     }
 }
 
-function processConsent(consent){
-    if (consent != "none"){ // none means not even 'store decision' cookie
-        // update cookie
-        const d = new Date();
-        d.setTime(d.getTime() + (365*24*60*60*1000)); // store for one year
-        let expires = "expires="+ d.toUTCString();
-        document.cookie = "bcheesterveld=" + consent + ";" + expires + ";path=/";
-        if (consent == "all"){
-            // insta ding
-            //<script async src="https://www.instagram.com/embed.js"></script>
-            loadScript("https://www.instagram.com/embed.js").catch(loadScript.bind(null)).then();
+function processConsent(consent) {
+  if (consent !== "functional" && consent !== "all") {
+    return;
+  }
 
-            // <script async src="https://www.googletagmanager.com/gtag/js?id=G-BC6RZHGQ18"></script>
-            //     <script>
-            //     window.dataLayer = window.dataLayer || [];
-            //     function gtag(){dataLayer.push(arguments);}
-            //     gtag('js', new Date());
+  const expires = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
 
-            //     gtag('config', 'G-BC6RZHGQ18');
-            // </script>
-            loadScript("https://www.googletagmanager.com/gtag/js?id=G-BC6RZHGQ18").catch(loadScript.bind(null)).then();
-            let script = document.createElement("script")
-            script.innerHTML = "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-BC6RZHGQ18');"
-            document.head.appendChild(script)
-        }
-    }
+  document.cookie = [
+    `bcheesterveld=${encodeURIComponent(consent)}`,
+    `expires=${expires.toUTCString()}`,
+    "path=/",
+    "SameSite=Lax",
+    location.protocol === "https:" ? "Secure" : ""
+  ].filter(Boolean).join("; ");
+
+  if (consent !== "all") {
+    return;
+  }
+
+  // Google Analytics
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function () {
+    window.dataLayer.push(arguments);
+  };
+
+  window.gtag("js", new Date());
+  window.gtag("config", "G-BC6RZHGQ18");
+
+  loadScript("https://www.googletagmanager.com/gtag/js?id=G-BC6RZHGQ18")
+    .catch(error => console.error("Google Analytics could not load:", error));
+
+  // Instagram embeds
+  loadScript("https://www.instagram.com/embed.js")
+    .then(() => {
+      if (window.instgrm?.Embeds) {
+        window.instgrm.Embeds.process();
+      }
+    })
+    .catch(error => console.error("Instagram embed script could not load:", error));
 }
 
 const infoBlockContent = {
@@ -104,172 +166,313 @@ const infoBlockContent = {
 
 function showInfoBlock(location){
     event.preventDefault();
-    document.getElementById("infoblock").style.display = "block";
+    document.getElementById("infoblock").style.display = "flex";
     document.getElementById("infoblock-content").innerText = infoBlockContent[location];
 }
 
 function hideInfoblock(){ document.getElementById("infoblock").style.display = "none"; }
 
-const indexContentMapping = {
-    "nieuwsbriefAug": "Nieuwsbrief-Heesterveld-augustus-2023.pdf",
-    "asbestbrief": "Brief asbestonderzoek Heesterveld.pdf",
-    "pollProblemenInDeWoning": "https://docs.google.com/forms/d/e/1FAIpQLSe2k-sO9k190wRiHH--72RWba99d7CFxkfdp7z2_FYgRYe1lQ/viewform?embedded=true",
-    "technischeControle": "Brief technische opnames woningen.pdf",
-    "technischeOpname": "Brief_aankondiging_technische_onderzoeken.pdf",
-    "bewonersAvond2023": "Uitnodiging bewonersavond.pdf",
-    "technischeControle2": "230908 Reminder2 brief technische opnames woningen Heesterveld.pdf",
-    "updateSLA": '<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/C189bIOL38w/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/p/C189bIOL38w/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">View this post on Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a><p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;"><a href="https://www.instagram.com/p/C189bIOL38w/?utm_source=ig_embed&amp;utm_campaign=loading" style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;" target="_blank">A post shared by bureau SLA - we are architects (@bureausla)</a></p></div></blockquote> <script async src="http://www.instagram.com/embed.js"></script><blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/C2O--oFoNyh/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"><div style="padding:16px;"> <a href="https://www.instagram.com/p/C2O--oFoNyh/?utm_source=ig_embed&amp;utm_campaign=loading" style=" background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> <div style=" display: flex; flex-direction: row; align-items: center;"> <div style="background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 40px; margin-right: 14px; width: 40px;"></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 100px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 60px;"></div></div></div><div style="padding: 19% 0;"></div> <div style="display:block; height:50px; margin:0 auto 12px; width:50px;"><svg width="50px" height="50px" viewBox="0 0 60 60" version="1.1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-511.000000, -20.000000)" fill="#000000"><g><path d="M556.869,30.41 C554.814,30.41 553.148,32.076 553.148,34.131 C553.148,36.186 554.814,37.852 556.869,37.852 C558.924,37.852 560.59,36.186 560.59,34.131 C560.59,32.076 558.924,30.41 556.869,30.41 M541,60.657 C535.114,60.657 530.342,55.887 530.342,50 C530.342,44.114 535.114,39.342 541,39.342 C546.887,39.342 551.658,44.114 551.658,50 C551.658,55.887 546.887,60.657 541,60.657 M541,33.886 C532.1,33.886 524.886,41.1 524.886,50 C524.886,58.899 532.1,66.113 541,66.113 C549.9,66.113 557.115,58.899 557.115,50 C557.115,41.1 549.9,33.886 541,33.886 M565.378,62.101 C565.244,65.022 564.756,66.606 564.346,67.663 C563.803,69.06 563.154,70.057 562.106,71.106 C561.058,72.155 560.06,72.803 558.662,73.347 C557.607,73.757 556.021,74.244 553.102,74.378 C549.944,74.521 548.997,74.552 541,74.552 C533.003,74.552 532.056,74.521 528.898,74.378 C525.979,74.244 524.393,73.757 523.338,73.347 C521.94,72.803 520.942,72.155 519.894,71.106 C518.846,70.057 518.197,69.06 517.654,67.663 C517.244,66.606 516.755,65.022 516.623,62.101 C516.479,58.943 516.448,57.996 516.448,50 C516.448,42.003 516.479,41.056 516.623,37.899 C516.755,34.978 517.244,33.391 517.654,32.338 C518.197,30.938 518.846,29.942 519.894,28.894 C520.942,27.846 521.94,27.196 523.338,26.654 C524.393,26.244 525.979,25.756 528.898,25.623 C532.057,25.479 533.004,25.448 541,25.448 C548.997,25.448 549.943,25.479 553.102,25.623 C556.021,25.756 557.607,26.244 558.662,26.654 C560.06,27.196 561.058,27.846 562.106,28.894 C563.154,29.942 563.803,30.938 564.346,32.338 C564.756,33.391 565.244,34.978 565.378,37.899 C565.522,41.056 565.552,42.003 565.552,50 C565.552,57.996 565.522,58.943 565.378,62.101 M570.82,37.631 C570.674,34.438 570.167,32.258 569.425,30.349 C568.659,28.377 567.633,26.702 565.965,25.035 C564.297,23.368 562.623,22.342 560.652,21.575 C558.743,20.834 556.562,20.326 553.369,20.18 C550.169,20.033 549.148,20 541,20 C532.853,20 531.831,20.033 528.631,20.18 C525.438,20.326 523.257,20.834 521.349,21.575 C519.376,22.342 517.703,23.368 516.035,25.035 C514.368,26.702 513.342,28.377 512.574,30.349 C511.834,32.258 511.326,34.438 511.181,37.631 C511.035,40.831 511,41.851 511,50 C511,58.147 511.035,59.17 511.181,62.369 C511.326,65.562 511.834,67.743 512.574,69.651 C513.342,71.625 514.368,73.296 516.035,74.965 C517.703,76.634 519.376,77.658 521.349,78.425 C523.257,79.167 525.438,79.673 528.631,79.82 C531.831,79.965 532.853,80.001 541,80.001 C549.148,80.001 550.169,79.965 553.369,79.82 C556.562,79.673 558.743,79.167 560.652,78.425 C562.623,77.658 564.297,76.634 565.965,74.965 C567.633,73.296 568.659,71.625 569.425,69.651 C570.167,67.743 570.674,65.562 570.82,62.369 C570.966,59.17 571,58.147 571,50 C571,41.851 570.966,40.831 570.82,37.631"></path></g></g></g></svg></div><div style="padding-top: 8px;"> <div style=" color:#3897f0; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:550; line-height:18px;">View this post on Instagram</div></div><div style="padding: 12.5% 0;"></div> <div style="display: flex; flex-direction: row; margin-bottom: 14px; align-items: center;"><div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(0px) translateY(7px);"></div> <div style="background-color: #F4F4F4; height: 12.5px; transform: rotate(-45deg) translateX(3px) translateY(1px); width: 12.5px; flex-grow: 0; margin-right: 14px; margin-left: 2px;"></div> <div style="background-color: #F4F4F4; border-radius: 50%; height: 12.5px; width: 12.5px; transform: translateX(9px) translateY(-18px);"></div></div><div style="margin-left: 8px;"> <div style=" background-color: #F4F4F4; border-radius: 50%; flex-grow: 0; height: 20px; width: 20px;"></div> <div style=" width: 0; height: 0; border-top: 2px solid transparent; border-left: 6px solid #f4f4f4; border-bottom: 2px solid transparent; transform: translateX(16px) translateY(-4px) rotate(30deg)"></div></div><div style="margin-left: auto;"> <div style=" width: 0px; border-top: 8px solid #F4F4F4; border-right: 8px solid transparent; transform: translateY(16px);"></div> <div style=" background-color: #F4F4F4; flex-grow: 0; height: 12px; width: 16px; transform: translateY(-4px);"></div> <div style=" width: 0; height: 0; border-top: 8px solid #F4F4F4; border-left: 8px solid transparent; transform: translateY(-4px) translateX(8px);"></div></div></div> <div style="display: flex; flex-direction: column; flex-grow: 1; justify-content: center; margin-bottom: 24px;"> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; margin-bottom: 6px; width: 224px;"></div> <div style=" background-color: #F4F4F4; border-radius: 4px; flex-grow: 0; height: 14px; width: 144px;"></div></div></a><p style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;"><a href="https://www.instagram.com/p/C2O--oFoNyh/?utm_source=ig_embed&amp;utm_campaign=loading" style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;" target="_blank">A post shared by bureau SLA - we are architects (@bureausla)</a></p></div></blockquote> <script async src="//www.instagram.com/embed.js"></script>',
-    "uitnodigingBewonersavonden": "Uitnodiging Heesterveld informatiebijeenkomsten Ymere.pdf",
-    "samenvattingProjectplan": "20240416 Concept Samenvatting Projectplan Heesterveld.pdf",
-    "conceptPlan": "Concept Projectplan Heesterveld april 2024.pdf",
-    "reminderRaadpleging": "<h2>Enquete voor het advies aan Ymere</h2>\n<p>Twee weken terug hebben alle bewoners (namens ons) van Stichting !WOON een enquete gekregen (op papier en een link via de mail) over de plannen van Ymere. Vanaf vorige week komen er ook enqueteurs langs (met een Stichting !WOON badge waar je om mag vragen) om de respons zo hoog mogelijk te krijgen. We hebben jullie feedback namelijk heel hard nodig! Jullie feedback wordt gebruikt om het gekwalificeerd advies aan Ymere te schrijven. Op basis van dit advies kan het concept projectplan nog aangepast worden. Je hebt nu dus nog invloed op de inhoud van het projectplan. Hoe meer feedback we hebben, hoe beter het advies aan Ymere alle huurders representeert. </p>\n\n<h3>Wij krijgen <b>geen persoonsgegevens</b> van jullie</h3>\n<p>De rapportage die wij van Stichting !WOON krijgen is anoniem, wij hebben dus geen toegang tot namen, huisnummers of handschriften. Er is geen enkele manier waarop wij (of Ymere) die informatie terug kunnen leiden naar een individuele huurder. De enquete is dus dé plek om je (ongezouten) mening te geven op het projectplan</p>\n\n<h3>Loop je vast?</h3>\n<p>Als je ergens vast loopt m.b.t. het concept projectplan, de enquete of in het algemeen over de renovatie, neem vooral contact op met ons of de mensen van !Woon of Ymere. We zijn er om jullie te helpen en te representeren</p>",
-    "definitiefProjectplan": "Projectplan-Heesterveld-2024.pdf",
-    "parkeerFlyer": "Dubbel_Parkeren_Heesterveld_(1).pdf",
-    "nieuwsbriefNov24": "Nieuwsbrief_Heesterveld_November_2024.pdf"
-};
 
-const indexNeedsWarningBlockMapping = {
-    "pollProblemenInDeWoning": false,
-    "nieuwsbriefAug": true,
-    "asbestbrief": false,
-    "technischeControle": false,
-    "technischeOpname": false,
-    "bewonersAvond2023": false,
-    "technischeControle2": false,
-    "updateSLA": true,
-    "uitnodigingBewonersavonden": false,
-    "samenvattingProjectplan": true,
-    "conceptPlan": true,
-    "reminderRaadpleging": false,
-    "definitiefProjectplan": true,
-    "parkeerFlyer": false,
-    "nieuwsbriefNov24": false
-}
+function showContent(requestedContent = null){
+    const [org, contentId] = retrieveUrlParams()
 
-const indexHeaderMapping = { // order is important here! Add newest at the top, this is used for the index page feed list
-    "parkeerFlyer": "Flyer dubbel/fout parkeren",
-    "nieuwsbriefNov24": "Nieuwsbrief van Ymere (november 2024)",
-    "definitiefProjectplan": "Definitief projectplan",
-    "reminderRaadpleging": "Reminder om de enquete in te vullen!",
-    "conceptPlan": "Definitieve conceptversie van het projectplan voor het groot onderhoud van de Heesterveld",
-    "samenvattingProjectplan":"Samenvatting van het concept projectplan",
-    "uitnodigingBewonersavonden": "Uitnodiging bewonersavonden op 24 en 25 april 2024",
-    "updateSLA": "Impressie van concept ontwerp Heesterveld - Bureau SLA",
-    "technischeControle2": "REMINDER: Technische controles",
-    "pollProblemenInDeWoning": "Poll: Welke problemen ervaar jij in je woning?",
-    "nieuwsbriefAug": "Nieuwsbrief van Ymere (augustus 2023)",
-    "asbestbrief": "Brief over het asbestonderzoek",
-    "technischeControle": "Herinneringsbrief over de technische opnames van de woningen",
-    "bewonersAvond2023": "Uitnodiging voor de bewonersavond februari 2023",
-    "technischeOpname": "Brief over de technische opnames van de woningen"
-}
+    if (contentId){
+        requestedContent = contentId
+        // empty out the params to avoid accidental overrides
+        const url = new URL(window.location.href);
+        url.searchParams.delete('requestedContent');
+        history.pushState(null, '', url);
+    }
 
-const indexHighlightsMapping = {
-    "technischeControle2": "REMINDER: Je bent verplicht mee te werken aan een technische controle van je woning. Wanneer Hemubo nog niet langs is geweest bij jouw woning en je daarvoor nog geen afspraak hebt, neem contact op met Hemubo",
-    "nieuwsbriefAug": "<b>Voorlopige</b> plannen voor de buitenkant van de flats. O.a.: HR++ glas en een nieuw ontwerp voor de buitenkant van de flats\n<b>Voorlopige</b> plannen voor de binnenkant van de woningen. O.a.: op orde brengen/vervangen van sanitair en keukens en mechanische ventilatie\nNieuwe bewonerscommissie",
-    "asbestbrief": "De firma Wouters gaat asbestonderzoek uitvoeren binnen de woningen\nDit is een wettelijke verplichting en houdt niet in dat er verwacht wordt dat er veel asbest wordt aangetroffen\nOnderzoeken starten in september",
-    "pollProblemenInDeWoning": "Welke problemen ervaar jij in je woning en in de algemene ruimten?",
-    "technischeControle": "Reminder om een afspraak te plannen met Hemubo voor een technische opname van jouw woning\nDeze afspraken zijn nodig zodat de aannemer met de juiste informatie kan beginnen aan het groot onderhoud\nOverlast tijdens deze technische opname is minimaal",
-    "technischeOpname": "Hemubo neemt contact op met bewoners om een afspraak te plannen voor de technische opname van jouw woning\nDeze afspraken zijn nodig zodat de aannemer met de juiste informatie kan beginnen aan het groot onderhoud\nOverlast tijdens deze technische opname is minimaal",
-    "bewonersAvond2023": "Uitnodiging voor de bewonersavond op 13 februari 2023\nInformatie over de uitvoering van de technische onderzoeken\nOprichten bewonerscommissie",
-    "updateSLA": "Architectenbureau SLA is ingeschakeld door Ymere voor het ontwerpen van Heesterveld 3.0. Met Heesterveld 3.0 wordt gedoeld op Heesterveld na de renovatie\nBureau SLA heeft impressies van het concept ontwerp en informatie over de tegels op de gevels gepost op hun Instagram",
-    "uitnodigingBewonersavonden": "Op 24 en 25 april vinden er bewonersavonden plaats, van 16:00 tot 18:00 en van 19:00 tot 21:00 op Heesterveld 75\nHeb je vragen over de informatie die je van Ymere hebt ontvangen, het concept projectplan op deze website of wil je kennis maken met de mensen die aan dit project werken, kom dan vooral langs!",
-    "samenvattingProjectplan": "Ymere wil verschillende zaken binnen en buiten je woning aanpakken tijdens het groot onderhoud\nDit is de samenvatting van het <b>concept</b> projectplan, de plannen kunnen nog wijzigen naar aanleiding van de feedback van huurders en het advies van de bewonerscommissie\nHeb je hier vragen over? Kom dan naar de bewonersavonden op 24 en 25 april!",
-    "conceptPlan": "Ymere heeft met onze input het onderstaande <b>concept</b> projectplan opgesteld\nDit concept beschrijft de voorgenomen werkzaamheden aan onze woningen en de blokken in het algemeen\nOp basis van jullie feedback in de vragenlijst die je van !Woon krijgt en op de bewonersavonden, brengen wij nog een advies uit aan Ymere. Het projectplan kan naar aanleiding daarvan nog wijzigen. Het projectplan is pas definitief als 70% van alle huurders heeft ingestemd met het projectplan als gepresenteerd\nEr wordt verwezen naar plattegronden, deze zijn nog niet beschikbaar. Zodra ze beschikbaar zijn, delen wij deze op de website",
-    "reminderRaadpleging": "Vul alsjeblieft de enquete in!",
-    "definitiefProjectplan": "Dit is de definitieve versie van het projectplan voor de renovatie van de Heesterveld \n Dit plan is pas <b>rechtsgeldig wanneer minimaal 70% van de bewoners via de akkoordverklaring akkoord hebben gegeven</b> \n Op de akkoordverklaring kun je ook aangeven of je een <b>videofoon</b> zou willen, ook hier moet 70% akkoord mee gaan \n Enkel huurverhoging wanneer minimaal 70% van de huurders een videofoon wil",
-    "parkeerFlyer": "In verband met de start van de renovatie verzoekt Ymere ons om alleen in de parkeervakken te parkeren",
-    "nieuwsbriefNov24": "70% akkoord is behaald \n De renovatie start in januari 2025, de eerste huisbezoeken zijn al in december 2024 \n Ondanks dat de 70% akkoord niet is behaald voor de videofoon, gaat Ymere deze toch installeren. Dit is op hun kosten, er is dus geen huurverhoging aan verbonden \n Sluit vast een inboedelverzekering af"
-}
-
-function processParameters(){
-    const urlParams = new URL(window.location.href).searchParams;
-    if (urlParams.toString() !== ""){
-        const requestedContent = urlParams.get("requestedContent");
-        const indexOfContent = Object.keys(indexHeaderMapping).indexOf(requestedContent);
-        const contentCount = Object.keys(indexHeaderMapping).length;
-        let newContent = "";
-        if (indexOfContent !== 0) {
-            const prevContentLink = "./index.html?requestedContent=" + Object.keys(indexHeaderMapping)[(indexOfContent-1)];
+    if (org != "" && requestedContent != ""){
+        const letter = getNewsletterById(requestedContent)
+        let newContent = ""
+        
+        if (letter.getId > 1) {
+            const prevContentLink = "./Newsletters.html?org=" + org + "&requestedContent=" + 
+            (letter.getId - 1);
             newContent += `<div class='prev-content'><a class="fas fa-chevron-left fa-xl" href=${prevContentLink}></a></div>`;
         }
         newContent += "<div class='curr-content'>";
 
-        if (requestedContent.startsWith("poll")){
-            newContent += `<h1>${indexHeaderMapping[requestedContent]}</h1><p class="poll info">${indexHighlightsMapping[requestedContent]}</p><iframe src="${indexContentMapping[requestedContent]}" max-width="640" height="700" frameborder="0" marginheight="0" marginwidth="0"class="poll-form-iframe">Loading…</iframe>`;
-        } else if (requestedContent.includes("SLA")){
-            newContent += `<h1>${indexHeaderMapping[requestedContent]}</h1>`;
-            if (indexNeedsWarningBlockMapping[requestedContent]){
+        if (letter.type == "poll"){
+            newContent += `<h1>${letter.header}</h1><p class="poll info">${letter.bulletpoints}</p><iframe src="${letter.content}" max-width="640" height="700" frameborder="0" marginheight="0" marginwidth="0"class="poll-form-iframe">Loading…</iframe>`;
+        } else if (letter.type == "instagram"){
+            newContent += `<h1>${letter.header}</h1>`;
+            if (letter.needsInfoBlock){
                 newContent += `<div class="warning-block"><b>Let op!</b> De informatie hieronder is <b>niet</b> definitief. De plannen voor het groot onderhoud kunnen dus nog wijzigen.</div>`;
             }
             newContent += `<ul class="highlights-list">`;
-            const highlightsList = indexHighlightsMapping[requestedContent].split("\n");
+            const highlightsList = letter.bulletpoints.split("\n");
             for (let highlight of highlightsList) { newContent += `<li>${highlight}</li>`; }
-            newContent += "</ul>" + indexContentMapping[requestedContent]
+            newContent += "</ul>" + letter.content
         }
-        else if (requestedContent?.includes("reminderRaadpleging")) {
-            newContent += `<h1>${indexHeaderMapping[requestedContent]}</h1>`;
-            if (indexNeedsWarningBlockMapping[requestedContent]){
+        else if (letter.type == "text") {
+            newContent += `<h1>${letter.header}</h1>`;
+            if (letter.needsInfoBlock){
                 newContent += `<div class="warning-block"><b>Let op!</b> De informatie hieronder is <b>niet</b> definitief. De plannen voor het groot onderhoud kunnen dus nog wijzigen.</div>`;
             }
-            newContent += indexContentMapping[requestedContent];
+            newContent += letter.content;
         }
-        else {
-            newContent += `<h1>${indexHeaderMapping[requestedContent]}</h1>`;
-            if (indexNeedsWarningBlockMapping[requestedContent]) {
+        else if (letter.type == "pdf") {
+            newContent += `<h1>${letter.header}</h1>`;
+            if (letter.needsInfoBlock) {
                 newContent += `<div class="warning-block"><b>Let op!</b> De informatie hieronder is <b>niet</b> definitief. De plannen voor het groot onderhoud kunnen dus nog wijzigen.</div>`;
             }
             newContent += `<ul class="highlights-list">`;
-            const highlightsList = indexHighlightsMapping[requestedContent].split("\n");
+            const highlightsList = letter.bulletpoints.split("\n");
             for (let highlight of highlightsList) { newContent += `<li>${highlight}</li>`; }
-            newContent += `</ul><object data="./${indexContentMapping[requestedContent]}" type="application/pdf" class="brieven-docviewer"><p>Unable to display PDF file. <a href="./${indexContentMapping[requestedContent]}">Download</a> instead.</p></object>`;
+            newContent += `</ul><object data="./${resolveContentLocation(letter.content)}" type="application/pdf" class="brieven-docviewer"><p>Unable to display PDF file. <a href="./${resolveContentLocation(letter.content)}">Download</a> instead.</p></object>`;
         }
+        else { console.log("unknown type: " + letter.type)}
+
         newContent += "</div>";
-        if (indexOfContent !== (contentCount - 1)){
-            const nextContentLink = "./index.html?requestedContent=" + Object.keys(indexHeaderMapping)[(indexOfContent+1)];
+
+        if (letter.getId !== (getNewsletterList().length - 1)){
+            const nextContentLink = "./Newsletters.html?org=" + org + "&requestedContent=" + (letter.getId + 1);
             newContent += `<div class='next-content'><a class="fas fa-chevron-right fa-xl" href=${nextContentLink}></a></div>`;
         }
-        document.getElementById("index-content").innerHTML = newContent;
+
+        document.getElementById("letter-content").innerHTML = newContent;
         try{
             window.instgrm.Embeds.process();
         }
         catch(err){}
-    } else { // load feed list
-        let feedlist = ``
-        for (let key in indexHeaderMapping) { 
-            const highlights = indexHighlightsMapping[key].replaceAll("\n", ". ");
-            const highlightsShortString = highlights.split(" ").slice(0, 20).join(" ") + "...";
-            feedlist += `<li onclick="location.href='./index.html?requestedContent=${key}'"><span class="label">${indexHeaderMapping[key]}</span><span class="second-label">${highlightsShortString}</span></li>`;
-        }
-        document.getElementById("index-feed").innerHTML = feedlist;
     }
+
+    document.getElementById("letter-select").value = requestedContent
+}
+
+function retrieveUrlParams(){
+    const urlParams = new URL(window.location.href).searchParams;
+    org = urlParams.get("org")
+    requestedContent = urlParams.get("requestedContent")
+    return [org, requestedContent]
+}
+
+function showNoNewsletters(){
+    document.getElementById("select-div").display = "none"
+    document.getElementById("letter-content").innerHTML = `
+    <h2>Geen nieuwsbrieven beschikbaar</h2>
+    <p>Het is mogelijk dat er nog geen nieuwsbrieven beschikbaar zijn.</p>
+    <p>Zou hier wel iets moeten staan, maar zie je het niet? Neem dan contact op met de BC.</p>
+    `
 }
 
 function prepareLetterSelect(){
-    let selectOptions = `<select data-role="select" id="letter-select" onchange="displayCorrectLetter()">`;
-    for (let item in indexHeaderMapping){
-        if (!item.startsWith("poll")){
-            selectOptions += `<option value="${item}">${indexHeaderMapping[item]}</option>`;
+    let selectOptions = `<select class="form-select" id="letter-select" onchange="displayCorrectLetter()">`;
+    
+    const newsletterList = getNewsletterList()
+
+    if (newsletterList.length == 0){
+        // backup option
+        showNoNewsletters()
+    } else {
+        for (const item of newsletterList){
+            selectOptions += `<option value="${item.id}">${item.header}</option>`;
         }
+
+        selectOptions += `</select>`;
+        document.getElementById("select-div").innerHTML = selectOptions;
+        displayCorrectLetter()
     }
-    selectOptions += `</select>`;
-    document.getElementById("select-div").innerHTML = selectOptions;
 }
 
 function displayCorrectLetter(){
     const requestedLetter = document.getElementById("letter-select").value;
-    const letterCode = getLetterCode(requestedLetter);
-    document.getElementById("letter-content").innerHTML = letterCode;
+
+    const letterCode = showContent(requestedLetter);
+    // document.getElementById("letter-content").innerHTML = letterCode;
+}
+
+function getNewsletterList(reqOrg=undefined) {
+    let org = undefined
+    try{
+        org = retrieveUrlParams()[0].toLowerCase()
+    } catch {
+        org = reqOrg
+    }
+    
+    if (org == "ymere"){ return YMERE }   
+    else if (org =="hemubo") { return HEMUBO }
+    else { return [] }
+}
+
+function resolveContentLocation(fileName) {
+    const org = retrieveUrlParams()[0].toLowerCase()
+    if (org == "ymere"){ return FOLDER_YMERE + fileName }   
+    else{ return FOLDER_HEMUBO + fileName }
+}
+
+function getNewsletterById(id) {
+    let newsletterList = getNewsletterList()
+    return newsletterList.find(newsletter => newsletter.getId === parseInt(id)) || null;
 }
 
 function getLetterCode(requestedContent){
-    let letterCode = `<h2>${indexHeaderMapping[requestedContent]}</h2>`;
-    if (indexNeedsWarningBlockMapping[requestedContent]) {
+    const letter = getNewsletterById(requestedContent)
+
+    let letterCode = `<h2>${letter.header}</h2>`;
+    if (letter.needsInfoBlock) {
         letterCode += `<div class="warning-block"><b>Let op!</b> De informatie hieronder is <b>niet</b> definitief. De plannen voor het groot onderhoud kunnen dus nog wijzigen.</div>`
     }
     letterCode += `<ul class="highlights-list">`;
-    const highlightsList = indexHighlightsMapping[requestedContent].split("\n");
+    const highlightsList = letter.bulletpoints.split("\n");
     for (let highlight of highlightsList) { letterCode += `<li>${highlight}</li>`; }
-    letterCode += `</ul><object data="./${indexContentMapping[requestedContent]}" type="application/pdf" class="brieven-docviewer"><p>Unable to display PDF file. <a href="./${indexContentMapping[requestedContent]}">Download</a> instead.</p></object>`;
+    letterCode += `</ul><object data="./${resolveContentLocation(letter.content)}" type="application/pdf" class="brieven-docviewer"><p>Unable to display PDF file. <a href="./${resolveContentLocation(letter.content)}">Download</a> instead.</p></object>`;
     return letterCode;
+}
+
+function capitalizeFirstLetter(val) {
+    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
+
+function getFeed(newsletterList, org){
+    let feedlist = `<h3>Updates van ${capitalizeFirstLetter(org)}</h3>`
+
+    if (newsletterList.length > 0){
+        for (const item of newsletterList.reverse()){
+            const highlights = item.bulletpoints.replaceAll("\n", ". ")
+            const highlightsShortString = highlights.split(" ").slice(0, 20).join(" ") + "...";
+            const link = "./Newsletters.html?org=" + org + "&requestedContent=" + item.id
+            feedlist += `
+                <a href='${link}' class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">${item.header}</h5>
+                    </div>
+                    <p class="mb-1">${highlightsShortString}</p>
+                </a>
+            `
+        }
+    } else {
+        feedlist += `
+            <a class="list-group-item"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">Nog geen items</h5></div><p class="mb-1">Kijk later nog eens</p></a>`;
+    }
+    
+    return feedlist
+}
+
+function loadFeeds(){
+    let hemuboFeed = getFeed(getNewsletterList("hemubo"), "hemubo")
+    let ymereFeed = getFeed(getNewsletterList("ymere"), "ymere")
+
+    document.getElementById("feed-hemubo").innerHTML = hemuboFeed
+    document.getElementById("feed-ymere").innerHTML = ymereFeed
+}
+
+function initWorksCarousel() {
+  const AUTOPLAY_INTERVAL = 4000;
+
+  const wrapper    = document.getElementById("worksCarousel");
+  const track      = document.getElementById("worksTrack");
+  const dotsEl     = document.getElementById("worksDots");
+  const prevBtn    = document.getElementById("worksPrev");
+  const nextBtn    = document.getElementById("worksNext");
+  const pauseBadge = document.getElementById("worksPausedBadge");
+  const header = document.getElementById("header-carousel")
+  const container = document.getElementById("carousel-container")
+  const isSingle = carouselData.length === 1;
+    
+  let current = 0;
+  let paused  = false;
+  let timer   = null;
+
+    // if no items, hide header too
+    if (carouselData.length == 0){
+        header.style.display = "none"
+        container.style.display = "none"
+        return
+    }
+
+  // Build slides and dots
+  carouselData.forEach((item, i) => {
+    const slide = document.createElement("div");
+    slide.className = "works-slide" + (i === 0 ? " active-slide" : "");
+    slide.dataset.index = i;
+
+    const impactsHtml = item.impacts.map(impact => {
+    const emoji = impactEmoji[impact.emojiKey] ?? impactEmoji.generalNotice;
+
+    return `
+        <span class="works-impact-badge">
+        <span class="badge-emoji" aria-hidden="true">${emoji}</span>
+        <span>${impact.text}</span>
+        </span>`;
+    }).join("");
+
+    const weeksHtml = item.weeks.map(w =>
+      `<span class="works-week-pill">${w}</span>`
+    ).join("");
+
+    slide.innerHTML = `
+      <div class="works-slide-inner">
+        <p class="works-slide-title">${item.title}</p>
+        <p class="works-slide-desc">${item.description}</p>
+        <div class="works-impacts">${impactsHtml}</div>
+        <div class="works-slide-weeks">
+          <span class="week-label">📅 Gedurende:</span>
+          ${weeksHtml}
+        </div>
+      </div>`;
+
+    track.appendChild(slide);
+
+    if (!isSingle) {
+        const dot = document.createElement("button");
+        dot.className = "works-dot" + (i === 0 ? " active" : "");
+        dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+        dot.dataset.index = i;
+        dotsEl.appendChild(dot);
+    }
+  });
+
+  if (isSingle) {
+    wrapper.classList.add("single-slide");
+    prevBtn.style.display = "none";
+    nextBtn.style.display = "none";
+    dotsEl.style.display  = "none";
+    return; // skip all timer, event, and navigation logic
+    }
+
+  const slides = track.querySelectorAll(".works-slide");
+  const dots   = dotsEl.querySelectorAll(".works-dot");
+
+  function goTo(index, resumeAfter = false) {
+    current = (index + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle("active-slide", i === current));
+    dots.forEach((d, i)   => d.classList.toggle("active", i === current));
+    track.style.transform = `translateX(-${slides[0].getBoundingClientRect().width * current}px)`;
+    if (resumeAfter) resume();
+  }
+
+  function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => { if (!paused) goTo(current + 1); }, AUTOPLAY_INTERVAL);
+  }
+
+  function pause() {
+    paused = true;
+    pauseBadge.classList.add("visible");
+  }
+
+  function resume() {
+    paused = false;
+    pauseBadge.classList.remove("visible");
+    startTimer();
+  }
+
+  slides.forEach(slide => {
+    slide.addEventListener("click", () => {
+      const idx = parseInt(slide.dataset.index);
+      if (idx !== current) { goTo(idx); pause(); }
+      else { paused ? resume() : pause(); }
+    });
+  });
+
+  prevBtn.addEventListener("click", () => goTo(current - 1, true));
+  nextBtn.addEventListener("click", () => goTo(current + 1, true));
+  dots.forEach(dot => dot.addEventListener("click", () => goTo(parseInt(dot.dataset.index), true)));
+
+  goTo(0);
+  startTimer();
 }
