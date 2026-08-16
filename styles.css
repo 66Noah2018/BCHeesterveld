@@ -49,11 +49,15 @@ body{
     margin-left: auto;
     margin-right: auto;
     display: none;
+    margin-top: 10px;
 }
 
-#close-infoblock-btn{
-    float: right;
-    z-index: 3;
+.btn-close{
+    float: right !important;
+}
+
+#infoblock .card-header{
+    background: inherit;
 }
 
 
@@ -161,12 +165,6 @@ body{
     background-color: rgba(30, 64, 175, 0.5);
 }
 
-.bc-photo{
-    width: 80%;
-    max-width: 300px;
-    margin-left: 20px;
-}
-
 .clickable-area-active{
     border: 2px red solid;
 }
@@ -190,20 +188,6 @@ footer {
 
 .instagram-media{
     margin-left: 10px !important;
-}
-
-.logo-btn{
-    display: flex;
-    margin: 0px auto;
-    border: 1px gray solid;
-    border-radius: 5px;
-    padding: 10px;
-    height: 85px;
-    width: fit-content;
-}
-
-.logo-btn-img{
-    width: 120%;
 }
 
 /* Metro flat color shift on hover */
@@ -425,4 +409,23 @@ footer {
   flex: 0 0 100%;
   max-width: 100%;
   cursor: default;
+}
+
+#brand-img {
+    scale: 150%;
+    margin-left: 25px;
+}
+
+.logo-btn img{
+    height: 63px;
+}
+
+.logo-btn-img{
+    margin-top: 10px !important;
+    border: 1px #1971c2 solid;
+    border-radius: 7px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }

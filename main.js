@@ -166,7 +166,7 @@ const infoBlockContent = {
 
 function showInfoBlock(location){
     event.preventDefault();
-    document.getElementById("infoblock").style.display = "block";
+    document.getElementById("infoblock").style.display = "flex";
     document.getElementById("infoblock-content").innerText = infoBlockContent[location];
 }
 
@@ -175,6 +175,7 @@ function hideInfoblock(){ document.getElementById("infoblock").style.display = "
 
 function showContent(requestedContent = null){
     const [org, contentId] = retrieveUrlParams()
+
     if (contentId){
         requestedContent = contentId
         // empty out the params to avoid accidental overrides
@@ -237,15 +238,9 @@ function showContent(requestedContent = null){
             window.instgrm.Embeds.process();
         }
         catch(err){}
-    // } else { // load feed list
-    //     let feedlist = ``
-    //     for (let key in indexHeaderMapping) { 
-    //         const highlights = indexHighlightsMapping[key].replaceAll("\n", ". ");
-    //         const highlightsShortString = highlights.split(" ").slice(0, 20).join(" ") + "...";
-    //         feedlist += `<li onclick="location.href='./index.html?requestedContent=${key}'"><span class="label">${indexHeaderMapping[key]}</span><span class="second-label">${highlightsShortString}</span></li>`;
-    //     }
-    //     document.getElementById("index-feed").innerHTML = feedlist;
     }
+
+    document.getElementById("letter-select").value = requestedContent
 }
 
 function retrieveUrlParams(){
@@ -265,7 +260,7 @@ function showNoNewsletters(){
 }
 
 function prepareLetterSelect(){
-    let selectOptions = `<select data-role="select" id="letter-select" onchange="displayCorrectLetter()">`;
+    let selectOptions = `<select class="form-select" id="letter-select" onchange="displayCorrectLetter()">`;
     
     const newsletterList = getNewsletterList()
 
@@ -279,6 +274,7 @@ function prepareLetterSelect(){
 
         selectOptions += `</select>`;
         document.getElementById("select-div").innerHTML = selectOptions;
+        displayCorrectLetter()
     }
 }
 
@@ -331,11 +327,6 @@ function capitalizeFirstLetter(val) {
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
 
-
-function loadCarousel(){
-    // TODO
-}
-
 function getFeed(newsletterList, org){
     let feedlist = `<h3>Updates van ${capitalizeFirstLetter(org)}</h3>`
 
@@ -378,11 +369,20 @@ function initWorksCarousel() {
   const prevBtn    = document.getElementById("worksPrev");
   const nextBtn    = document.getElementById("worksNext");
   const pauseBadge = document.getElementById("worksPausedBadge");
+  const header = document.getElementById("header-carousel")
+  const container = document.getElementById("carousel-container")
   const isSingle = carouselData.length === 1;
     
   let current = 0;
   let paused  = false;
   let timer   = null;
+
+    // if no items, hide header too
+    if (carouselData.length == 0){
+        header.style.display = "none"
+        container.style.display = "none"
+        return
+    }
 
   // Build slides and dots
   carouselData.forEach((item, i) => {
